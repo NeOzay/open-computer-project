@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/battery_meka/battery_meka.iml" filepath="$PROJECT_DIR$/battery_meka/battery_meka.iml" />
+      <module fileurl="file://$PROJECT_DIR$/lib/lib.iml" filepath="$PROJECT_DIR$/lib/lib.iml" />
+      <module fileurl="file://$PROJECT_DIR$/monitor/monitor.iml" filepath="$PROJECT_DIR$/monitor/monitor.iml" />
+      <module fileurl="file://$PROJECT_DIR$/nc_fission_reactor controler/nc_fission_reactor controler.iml" filepath="$PROJECT_DIR$/nc_fission_reactor controler/nc_fission_reactor controler.iml" />
+      <module fileurl="file://$PROJECT_DIR$/project.iml" filepath="$PROJECT_DIR$/project.iml" />
+      <module fileurl="file://$PROJECT_DIR$/testing zone/testing zone.iml" filepath="$PROJECT_DIR$/testing zone/testing zone.iml" />
+    </modules>
+  </component>
+</project>
