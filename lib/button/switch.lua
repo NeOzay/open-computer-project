@@ -1,10 +1,10 @@
 ---@type BUTTON
 local Button = require("button")
 
---local Color = require("color")
---local TO = require("textObject")
---local drawtO = TO.drawtO
---local TextObject = TO.TextObject
+local Color = require("color")
+local TO = require("textObject")
+local drawtO = TO.drawtO
+local TextObject = TO.TextObject
 
 local function Switch()
     ---@class button

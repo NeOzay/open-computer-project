@@ -1,0 +1,37 @@
+{
+	"Lua.diagnostics.globals": [
+	],
+	"workbench.colorTheme": "Monokai Pro (Filter Spectrum)",
+	"editor.semanticHighlighting.enabled": true,
+	"[json]": {
+		"editor.quickSuggestions": {
+			"strings": true
+		},
+		"editor.suggest.insertMode": "replace"
+	},
+	"Lua.runtime.version": "LuaJIT",
+	"workbench.iconTheme": "material-icon-theme",
+	"material-icon-theme.folders.theme": "specific",
+	"editor.glyphMargin": true,
+	"editor.folding": true,
+	//"editor.lineNumbers": "off",
+	"workbench.activityBar.visible": true,
+	"editor.lineDecorationsWidth": 0, // undocumented
+	//"editor.lineNumbersMinChars": 5,  // undocumented
+	"editor.columnSelection": false,
+	"Lua.color.mode": "Semantic",
+	"files.exclude": {
+		"**/.git": true,
+		"**/.svn": true,
+		"**/.hg": true,
+		"**/CVS": true,
+		"**/.DS_Store": true
+	},
+	"Lua.workspace.library": [
+		"C:/Users/colpa/Documents/Code_Informatique/LUA/Open Computer/Open Computer documentation"
+	],
+	"pixelbyte.love2d.runOnSave": false,
+	"Lua.hint.setType": true,
+	"Lua.workspace.checkThirdParty": false,
+	"vscode-lua-format.configPath": ".vscode/lua-format.txt"
+}

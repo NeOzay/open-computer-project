@@ -2,7 +2,10 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/OpenComputer git/OpenComputer git.iml" filepath="$PROJECT_DIR$/OpenComputer git/OpenComputer git.iml" />
       <module fileurl="file://$PROJECT_DIR$/battery_meka/battery_meka.iml" filepath="$PROJECT_DIR$/battery_meka/battery_meka.iml" />
+      <module fileurl="file://$PROJECT_DIR$/computercraft-github/computercraft-github.iml" filepath="$PROJECT_DIR$/computercraft-github/computercraft-github.iml" />
+      <module fileurl="file://$PROJECT_DIR$/electrolyzer/electrolyzer.iml" filepath="$PROJECT_DIR$/electrolyzer/electrolyzer.iml" />
       <module fileurl="file://$PROJECT_DIR$/lib/lib.iml" filepath="$PROJECT_DIR$/lib/lib.iml" />
       <module fileurl="file://$PROJECT_DIR$/monitor/monitor.iml" filepath="$PROJECT_DIR$/monitor/monitor.iml" />
       <module fileurl="file://$PROJECT_DIR$/nc_fission_reactor controler/nc_fission_reactor controler.iml" filepath="$PROJECT_DIR$/nc_fission_reactor controler/nc_fission_reactor controler.iml" />

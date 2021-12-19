@@ -4,7 +4,7 @@ local os = require("os")
 local relay = {}
 
 local function formatMessage(...)
-    ---@class message
+    ---@class modemMessage
     ---@field eventType string
     ---@field receiverAddress string
     ---@field senderAddress string

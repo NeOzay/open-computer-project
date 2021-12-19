@@ -1,4 +1,4 @@
----@shape recipeDust
+---@class recipeDust
 ---@field amount number
 ---@field duration number
 ---@field energy number
