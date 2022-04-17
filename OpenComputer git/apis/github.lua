@@ -250,7 +250,7 @@ function Tree:iter()
 end
 
 ---@param dest string
----@param onProgress fun(item:(blob|tree),number)
+---@param onProgress fun(item:blob|tree,number:number)
 ---@overload fun(dest:string)
 function Tree:cloneTo(dest, onProgress)
     if not fs.exists(dest) then
@@ -283,7 +283,6 @@ Release.__index = Release
 ---@param tag string
 ---@return release
 function Release.new(repo, tag)
-    ---@type
     return setmetatable({ repo = repo, tag = tag }, Release)
 end
 
@@ -311,7 +310,6 @@ function Repository.new(user, name, auth)
     if auth then
         auth:checkToken()
     end
-    ---@type
     local r = setmetatable({ user = user, name = name, auth = auth }, Repository)
     __repoPriv[r] = { trees = {} }
     return r
@@ -350,6 +348,7 @@ end
 function Repository:__tostring()
     return ("Repo@%s/%s"):format(self.user, self.name)
 end
+
 
 -- Export members
 local github = {}

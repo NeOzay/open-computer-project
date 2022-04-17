@@ -33,5 +33,8 @@
 	"pixelbyte.love2d.runOnSave": false,
 	"Lua.hint.setType": true,
 	"Lua.workspace.checkThirdParty": false,
+	"Lua.semantic.annotation": true,
+	"Lua.semantic.keyword": true,
+	"Lua.semantic.variable": true,
 	"vscode-lua-format.configPath": ".vscode/lua-format.txt"
 }
