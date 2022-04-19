@@ -47,7 +47,7 @@ function filesystem.name(path) end
 ---This is similar to component.proxy, except that the specified string may also be a file system component's label. We check for the label first, if no file system has the specified label we fall back to component.proxy.
 ---
 ---Returns the proxy of the specified file system, or nil and an error message if no file system matching the specified filter was found.
----@param filter
+---@param filter string
 ---@return filesystem | nil, string
 ---@overload fun(filter:string):filesystem
 function filesystem.proxy(filter) end
@@ -60,7 +60,7 @@ function filesystem.proxy(filter) end
 function filesystem.mount(fs,path) end
 
 ---Returns an iterator function over all currently mounted file system component's proxies and the paths at which they are mounted. This means the same proxy may appear multiple times, but with different mount paths.
----@return table,string
+---@return table, string
 function filesystem.mounts() end
 
 ---Unmounts a file system. The parameter can either be a file system component's proxy or (abbreviated) address, in which case all mount points of this file system will be removed, or a path into the global directory structure, in which case the file system mount containing that directory will be unmounted.
@@ -156,7 +156,7 @@ function filesystem.copy(fromPath,toPath) end
 ---When opening files directly via the file system API you will get a file stream, a table with four functions. These functions are thin wrappers to the file system proxy's callbacks, which also means that read/write operations are not buffered, and can therefore be slow when reading few bytes often. You'll usually want to use io.open instead.
 ---@param path string
 ---@param mode string
----@return ocFile,string
+---@return ocFile, string
 function filesystem.open(path,mode) end
 
 

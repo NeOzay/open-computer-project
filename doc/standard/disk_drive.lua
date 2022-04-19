@@ -3,7 +3,7 @@
 ---@field address string
 local disk_drive = {}
 disk_drive.slot = -1
-disk_drive.type="disk_drive"
+disk_drive.type = "disk_drive"
 
 ---Eject the currently present medium from the drive.
 ---@return boolean

@@ -54,7 +54,7 @@ function component.fields(address) end
 
 ---Tries to resolve an abbreviated address to a full address. Returns the full address on success, or nil and an error message otherwise. Optionally filters by component type
 ---@param address string
----@return string @ or nil
+---@return string|nil @ or nil
 function component.get(address) end
 
 ---Checks if there is a primary component of the specified component type.
