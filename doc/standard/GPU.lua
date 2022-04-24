@@ -2,7 +2,6 @@
 ---@class gpu
 local gpu={}
 
-
 ---Tries to bind the GPU to a screen with the specified address. Returns true on success, false and an error message on failure.
 ---
 ---Resets the screen's settings if reset is 'true'. A GPU can only be bound to one screen at a time.
@@ -10,14 +9,12 @@ local gpu={}
 ---All operations on it will work on the bound screen. If you wish to control multiple screens at once, you'll need to put more than one graphics card into your computer.
 ---@param address string
 ---@return boolean @ string
----@overload fun(address: string, reset: boolean): boolean
+---@overload fun(address:string, reset:boolean):boolean
 function gpu.bind(address) end
-
 
 ---Get the address of the screen the GPU is bound to. Since 1.3.2.
 ---@return string
 function gpu.getScreen() end
-
 
 ---Gets the current background color. This background color is applied to all “pixels” that get changed by other operations.
 ---
@@ -25,7 +22,6 @@ function gpu.getScreen() end
 ---
 ---@return number,boolean
 function gpu.getBackground() end
-
 
 ---Sets the background color to apply to “pixels” modified by other operations from now on. The returned value is the old background color, as the actual value it was set to (i.e. not compressed to the color space currently set). The first value is the previous color as an RGB value.
 ---
@@ -37,30 +33,20 @@ function gpu.getBackground() end
 ---@overload fun(color:number,isPaletteIndex:boolean):number,number
 function gpu.setBackground(color) end
 
-
 ---Like getBackground, but for the foreground color.
 ---@return number,boolean
 function gpu.getForeground() end
 
-
 ---Like setBackground, but for the foreground color.
 ---@param color number
 ---@return number
 ---@overload fun(color:number,isPaletteIndex:boolean):number,number
-function gpu.setForeground(colors) end
-
----Like setBackground, but for the foreground color.
----@param color number
----@return number
----@overload fun(color:number,isPaletteIndex:boolean):number,number
-function gpu.setPaletteColor(color) end
-
+function gpu.setForeground(color) end
 
 ---Gets the RGB value of the color in the palette at the specified index.
 ---@param index number
 ---@return number
 function gpu.getPaletteColor(index) end
-
 
 ---Sets the RGB value of the color in the palette at the specified index.
 ---@param index number
@@ -68,17 +54,14 @@ function gpu.getPaletteColor(index) end
 ---@return number
 function gpu.setPaletteColor(index,value) end
 
-
 ---Gets the maximum supported color depth supported by the GPU and the screen it is bound to (minimum of the two).
 ---@return number
 function gpu.maxDepth() end
-
 
 ---Sets the color depth to use. Can be up to the maximum supported color depth. If a larger or invalid value is provided it will throw an error. Returns the old depth as one of the strings OneBit, FourBit, or EightBit.
 ---@param bit number
 ---@return string
 function gpu.setDepth(bit) end
-
 
 ---Gets the maximum resolution supported by the GPU and the screen it is bound to (minimum of the two).
 ---@return number,number
@@ -87,7 +70,6 @@ function gpu.maxResolution() end
 ---Gets the currently set resolution.
 ---@return number,number
 function gpu.getResolution() end
-
 
 ---Sets the specified resolution. Can be up to the maximum supported resolution. If a larger or invalid resolution is provided it will throw an error.
 ---
@@ -100,7 +82,6 @@ function gpu.setResolution(width,height) end
 ---Get the current viewport resolution.
 ---@return number,number
 function gpu.getViewport() end
-
 
 ---Set the current viewport resolution. Returns true if it was changed (may return false if an attempt was made to set it to the same value it was set before), false otherwise. This makes it look like screen resolution is lower, but the actual resolution stays the same.
 ---

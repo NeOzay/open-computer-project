@@ -58,7 +58,7 @@ function t:kill() end
 ---
 ---* **“dead”**:
 ---A dead thread has completed or aborted its execution or has been terminated. It cannot be resumed(t:resume()) nor suspended(t:suspend()). A dead thread does not block a parent process from closing. Killing a dead thread is not an error but does nothing.
----@return string
+---@return "running"|"suspended"|"dead"
 function t:status() end
 
 
