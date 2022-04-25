@@ -1,18 +1,27 @@
 local rob = require("robot")
 local os = require("os")
 local component =  require("component")
+local computer = require("computer")
+
 local sides = require("sides")
+
 local inventoryControleur = component.inventory_controller
+local generator = component.generator
+local chunk = component.chunkloader
+
+chunk.setActive(true)
 
 local height = 4
 local width = 4
 
 local invSize = rob.inventorySize()
+local maxEnergy = computer.maxEnergy
 
 local function startCheck()
 	local ender = inventoryControleur.getStackInInternalSlot(1)
-	if not ender or ender.name ~= "enderstorage:ender_storage" then
-		error("no enderchest in 15 slot and coal in 16 slot")
+	local coal = inventoryControleur.getStackInInternalSlot(2)
+	if not ender or ender.name ~= "enderstorage:ender_storage" or not coal or coal.name ~= "minecraft:coal" then
+		error("no enderchest in slot 1 or coal in slot 2")
 	end
 end
 
@@ -34,7 +43,7 @@ local function empty()
 	rob.select(1)
 	local ok = rob.placeUp()
 	if ok then
-		for i = 2, invSize do
+		for i = 3, invSize do
 			rob.select(i)
 			rob.dropUp()
 		end
@@ -60,6 +69,18 @@ local function half_turn(_side)
 	end
 end
 
+local function energy()
+	rob.select(2)
+	local currentEnergy = computer.energy()/maxEnergy
+	local count = generator.count()
+	if currentEnergy < 0.5 then
+		if  count < 10 then
+			generator.insert(10-count)
+		end
+	end
+end
+
+
 local sideflip = false
 local function main()
 	startCheck()
@@ -80,7 +101,7 @@ local function main()
 			os.exit()
 		end
 		rob.turnAround()
-		
+		energy()
 	end
 end
 
