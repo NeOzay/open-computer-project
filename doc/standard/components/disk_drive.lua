@@ -1,5 +1,5 @@
 
----@class disk_drive
+---@class disk_drive:componentBase
 ---@field address string
 local disk_drive = {}
 disk_drive.slot = -1

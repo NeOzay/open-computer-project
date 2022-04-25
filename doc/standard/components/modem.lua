@@ -1,4 +1,4 @@
----@class modem
+---@class modem:componentBase
 local modem = {}
 
 

@@ -1,5 +1,5 @@
 
----@class gpu
+---@class gpu:componentBase
 local gpu={}
 
 ---Tries to bind the GPU to a screen with the specified address. Returns true on success, false and an error message on failure.

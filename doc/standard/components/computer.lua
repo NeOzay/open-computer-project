@@ -1,5 +1,5 @@
 
----@class computer
+---@class computer:componentBase
 local computer ={}
 
 

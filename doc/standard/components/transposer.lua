@@ -1,4 +1,4 @@
----@class transposer
+---@class transposer:componentBase
 local transposer = {}
 
 ---Transfer some fluids between two fluid handlers (pipes or tanks, etc).

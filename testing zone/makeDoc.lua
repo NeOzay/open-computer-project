@@ -1,6 +1,7 @@
 local component = require("component")
 local fs = require("filesystem")
 local alldevice = component.list()
+---@type string[]
 local adress= {}
 
 local i=1

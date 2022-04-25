@@ -1,4 +1,4 @@
----@class nc_fission_reactor
+---@class nc_fission_reactor:componentBase
 local nc_fission_reactor = {}
 
 function nc_fission_reactor.getEnergyStored() end
@@ -19,8 +19,6 @@ function nc_fission_reactor.getLengthY() end
 
 function nc_fission_reactor.getFissionFuelHeat() end
 
-nc_fission_reactor.type = "nc_fission_reactor"
-
 function nc_fission_reactor.isProcessing() end
 
 function nc_fission_reactor.getReactorCoolingRate() end
@@ -31,11 +29,7 @@ function nc_fission_reactor.getHeatLevel() end
 
 function nc_fission_reactor.forceUpdate() end
 
-nc_fission_reactor.slot = "-1"
-
 function nc_fission_reactor.getReactorLayout() end
-
-nc_fission_reactor.address = "85c56467-dfd2-49f7-8d1c-0f70edf8b5f3"
 
 function nc_fission_reactor.getHeatMultiplier() end
 

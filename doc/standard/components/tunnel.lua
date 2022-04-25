@@ -1,4 +1,4 @@
----@class tunnel
+---@class tunnel:componentBase
 local tunnel = {}
 
 

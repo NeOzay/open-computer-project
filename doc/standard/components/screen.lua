@@ -1,4 +1,4 @@
----@class screen
+---@class screen:componentBase
 local screen = {}
 
 ---Returns whether the screen is currently on.

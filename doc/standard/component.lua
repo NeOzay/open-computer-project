@@ -19,8 +19,8 @@ function component.invoke(address, method) end
 ---For example, component.list("red") will return redstone components.
 ---
 ---If true is passed as a second parameter, exact matching is enforced, e.g. red will not match redstone.
----@return table
----@overload fun(filter:string ,exact:boolean):table
+---@return componentBase[]
+---@overload fun(filter:string ,exact:boolean):componentBase[]
 function component.list() end
 
 ---Returns a table with the names of all methods provided by the component with the specified address. The names are the keys in the table, the values indicate whether the method is called directly or not.
@@ -75,6 +75,12 @@ function component.getPrimary(componentType) end
 ---@return nil
 function component.setPrimary(componentType, address) end
 
+---@class componentBase
+---@field slot number
+---@field address string
+---@field type string
+
+
 ---@type nc_fission_reactor
 component.nc_fission_reactor = {}
 ---@type gpu
@@ -93,4 +99,5 @@ component.computer = {}
 component.disk_drive = {}
 ---@type transposer
 component.transposer = {}
+
 return component
