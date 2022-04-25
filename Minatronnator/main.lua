@@ -15,7 +15,7 @@ local height = 4
 local width = 4
 
 local invSize = rob.inventorySize()
-local maxEnergy = computer.maxEnergy
+local maxEnergy = computer.maxEnergy()
 
 local function startCheck()
 	local ender = inventoryControleur.getStackInInternalSlot(1)
@@ -47,7 +47,7 @@ local function empty()
 			rob.select(i)
 			rob.dropUp()
 		end
-		rob.select(1)
+		rob.select(2)
 		rob.swingUp()
 	end
 end
@@ -73,7 +73,7 @@ local function energy()
 	rob.select(2)
 	local currentEnergy = computer.energy()/maxEnergy
 	local count = generator.count()
-	if currentEnergy < 0.5 then
+	if currentEnergy < 0.8 then
 		if  count < 10 then
 			generator.insert(10-count)
 		end
