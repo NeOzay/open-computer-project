@@ -54,13 +54,13 @@ function transposer.getInventorySize(side) end
 
 ---Get a description of the fluid in the the specified tank on the specified side.
 ---@param side number
----@param tank number
+---@param tank? number
 ---@return table
 function transposer.getFluidInTank(side,tank) end
 
 ---Get the amount of fluid in the specified tank on the specified side.
 ---@param side number
----@param tank number
+---@param tank? number
 ---@return number
 function transposer.getTankLevel(side,tank) end
 
