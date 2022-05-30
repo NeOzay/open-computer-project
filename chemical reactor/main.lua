@@ -4,7 +4,6 @@ local tankmanager = component.transposer
 local chemSize = sides.south
 local tankssides = {sides.top, sides.west}
 
----@return "sodium_persulfate"|"iron_iii_chloride"
 local function getLiquidInChem()
 	local fluidsList = tankmanager.getFluidInTank(chemSize)
 	for i = 1, 3 do
