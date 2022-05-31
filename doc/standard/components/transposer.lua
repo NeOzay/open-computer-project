@@ -70,8 +70,9 @@ function transposer.getTankLevel(side,tank) end
 ---@param sinkSide number
 ---@param count number
 ---@param sourceSlot number
+---@param sinkSlot number
 ---@return number
-function transposer.transferItem(sourceSide,sinkSide,count,sourceSlot) end
+function transposer.transferItem(sourceSide,sinkSide,count,sourceSlot,sinkSlot) end
 
 ---Get whether the items in the two specified slots of the inventory on the specified side of the device are of the same type.
 ---@param side number

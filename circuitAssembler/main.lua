@@ -9,26 +9,67 @@ local drawerSide = sides.top
 
 local itemsIterator = transposer.getAllStacks(drawerSide)
 
+---@return Item[]
 local function selectRecipe()
+	local i = 0
+	local text = ""
+	---@type Item[][]
 	local list = {}
 	for name, recipe in pairs(recipes) do
-		table.insert(list, name)
-	end
-	local text = ""
-	for index, value in ipairs(list) do
-		text = text.."["..index.."]"..value..","
+		i = i + 1
+		text = text.."["..i.."]"..name..","
+		table.insert(list, recipes)
 	end
 	print(text)
-	return list[tonumber(io.read())]
+	---@type number
+	local selection
+	while type(selection) ~= "number" do
+		selection = tonumber(io.read())
+	end
+	return list[selection]
 end
-
+---@type table<string, number>
 local itemSlot = {}
-local function findItem(recipe)
+---@param recipe Item[]
+local function findItems(recipe)
 	itemsIterator.reset()
 
-	
+	---@type {[string]:boolean}
+	local toFound = {}
+	for _, item in ipairs(recipe) do
+		toFound[item.name] = true
+	end
+	local i = 0
+	for storedItem in itemsIterator do
+		i = i + 1
+		local storedItemLabel = storedItem.label
+		if toFound[storedItemLabel] then
+			toFound[storedItemLabel] = nil
+			itemSlot[storedItemLabel] = i
+		end
+	end
+
+	local missing = {}
+	local hasmissing = false
+	for name, bool in pairs(toFound) do
+		if bool then
+			hasmissing = true
+			table.insert(missing, name)
+		end
+	end
+	if hasmissing then
+		local allMissing = table.concat(missing, ", ")
+		print(allMissing.." not found")
+	end
 end
 
-selectRecipe()
+---@param itemSlot number
+---@param in number
+---@param amount number
+local function transferToAssembler(fromSlot, pushin, amount)
+	transposer.transferItem(drawerSide, assemblerSide, amount ,fromSlot, pushin)
+end
+local selectedRecipe = selectRecipe()
+
 
 transposer.getStackInSlot(side, slot)

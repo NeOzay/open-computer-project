@@ -22,8 +22,8 @@ end
 ---@field [5] Item
 ---@field [6] Item
 
+---@type table<string, Item[]>
 local recipes = {}
-
 recipes["Integrated Processor"] = {
 	item(plastic_board, 1),
 	item(cpu, 1),
