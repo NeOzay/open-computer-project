@@ -18,7 +18,7 @@ local function selectRecipe()
 	for name, recipe in pairs(recipes) do
 		i = i + 1
 		text = text.."["..i.."]"..name..","
-		table.insert(list, recipes)
+		table.insert(list, recipe)
 	end
 	print(text)
 	---@type number
@@ -28,6 +28,7 @@ local function selectRecipe()
 	end
 	return list[selection]
 end
+
 ---@type table<string, number>
 local itemSlot = {}
 ---@param recipe Item[]
@@ -63,13 +64,18 @@ local function findItems(recipe)
 	end
 end
 
----@param itemSlot number
----@param in number
+---@param fromSlot number
+---@param pushin number
 ---@param amount number
 local function transferToAssembler(fromSlot, pushin, amount)
-	transposer.transferItem(drawerSide, assemblerSide, amount ,fromSlot, pushin)
+	transposer.transferItem(drawerSide, assemblerSide, amount, fromSlot, pushin)
 end
+
 local selectedRecipe = selectRecipe()
+findItems(selectedRecipe)
 
+for key, value in pairs(transposer.getStackInSlot(drawerSide, itemSlot[selectedRecipe[1].name])) do
+	print(key, value)
+end
 
-transposer.getStackInSlot(side, slot)
+--

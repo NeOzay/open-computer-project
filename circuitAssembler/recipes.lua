@@ -3,7 +3,7 @@ local cpu = "CPU"
 local resistor = "SMD Resistor"
 local capacitor = "SMD Capacitor"
 local transistor = "SMD Transistor"
-local fine_redAlloy = "Fine Red Alloa Wire"
+local fine_redAlloy = "Fine Red Alloy Wire"
 
 ---@param name string
 ---@param n number
