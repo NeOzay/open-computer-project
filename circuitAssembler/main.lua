@@ -98,23 +98,21 @@ for index, item in ipairs(selectedRecipe) do
 	item_to_transfer[index] = recipeAmount * item.n
 end
 
----@param recipe Item[]
----@param itemsAmount table<number,number>
-local function iterator(recipe, itemsAmount)
-	local run = true
-	return coroutine.wrap(function ()
-	while run do
-		for index, item in pairs(itemsAmount) do
-			if amount > 0 then
-				coroutine.yield(index, item, amount)
-			end
+---@generic  K, V
+---@param t table<K, V>
+---@return fun(t2: table<K, V>, k: K):K, V
+local function loop(t)
+	return function (t2, k)
+		local k2, v = next(t2, k)
+		if not k2 then
+			k2, v = next(t2)
 		end
-	end
-	end)
+		return k2 , v
+	end, t
 end
 
 local function main()
-	for index, item, itemAmount in iterator(selectedRecipe, item_to_transfer) do
+	for index, item, itemAmount in loop(selectedRecipe) do
 		local itemStoredSlot = itemsSlot[item.name]
 		local currentAmount = item_to_transfer[index]
 		if currentAmount > 0 then
