@@ -29,12 +29,12 @@ local function selectRecipe()
 	return list[selection]
 end
 
----@type table<string, number>
-local itemSlot = {}
 ---@param recipe Item[]
 local function findItems(recipe)
 	itemsIterator.reset()
 
+	---@type table<string, number>
+	local itemsSlot = {}
 	---@type {[string]:boolean}
 	local toFound = {}
 	for _, item in ipairs(recipe) do
@@ -46,7 +46,7 @@ local function findItems(recipe)
 		local storedItemLabel = storedItem.label
 		if toFound[storedItemLabel] then
 			toFound[storedItemLabel] = nil
-			itemSlot[storedItemLabel] = i
+			itemsSlot[storedItemLabel] = i
 		end
 	end
 
@@ -61,21 +61,69 @@ local function findItems(recipe)
 	if hasmissing then
 		local allMissing = table.concat(missing, ", ")
 		print(allMissing.." not found")
+		error()
 	end
+	return itemsSlot
 end
 
 ---@param fromSlot number
 ---@param pushin number
 ---@param amount number
+---@return number
 local function transferToAssembler(fromSlot, pushin, amount)
-	transposer.transferItem(drawerSide, assemblerSide, amount, fromSlot, pushin)
+	local inAss = transposer.getSlotStackSize(assemblerSide, pushin)
+	return transposer.transferItem(drawerSide, assemblerSide, math.min(64 - inAss, amount), fromSlot, pushin)
 end
 
-local selectedRecipe = selectRecipe()
-findItems(selectedRecipe)
-
-for key, value in pairs(transposer.getStackInSlot(drawerSide, itemSlot[selectedRecipe[1].name])) do
-	print(key, value)
+local function selectAmount()
+	---@type number
+	local amount
+	while type(amount) ~= "number" do
+		amount = tonumber(io.read())
+	end
+	return amount
 end
 
---
+---@return Item[]
+---@return number
+local function request()
+	return selectRecipe(), selectAmount()
+end
+
+local selectedRecipe, recipeAmount = request()
+local itemsSlot = findItems(selectedRecipe)
+---@type table<number,number>
+local item_to_transfer = {}
+for index, item in ipairs(selectedRecipe) do
+	item_to_transfer[index] = recipeAmount * item.n
+end
+
+---@param recipe Item[]
+---@param itemsAmount table<number,number>
+local function iterator(recipe, itemsAmount)
+	local run = true
+	return coroutine.wrap(function ()
+	while run do
+		for index, item in pairs(itemsAmount) do
+			if amount > 0 then
+				coroutine.yield(index, item, amount)
+			end
+		end
+	end
+	end)
+end
+
+local function main()
+	for index, item, itemAmount in iterator(selectedRecipe, item_to_transfer) do
+		local itemStoredSlot = itemsSlot[item.name]
+		local currentAmount = item_to_transfer[index]
+		if currentAmount > 0 then
+			local transfered = transferToAssembler(itemStoredSlot, index, currentAmount)
+			item_to_transfer[index] = currentAmount - transfered
+		end
+	end
+end
+
+main()
+
+
