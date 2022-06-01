@@ -98,21 +98,10 @@ for index, item in ipairs(selectedRecipe) do
 	item_to_transfer[index] = recipeAmount * item.n
 end
 
----@generic  K, V
----@param t table<K, V>
----@return fun(t2: table<K, V>, k: K):K, V
-local function loop(t)
-	return function (t2, k)
-		local k2, v = next(t2, k)
-		if not k2 then
-			k2, v = next(t2)
-		end
-		return k2 , v
-	end, t
-end
+
 
 local function main()
-	for index, item, itemAmount in loop(selectedRecipe) do
+	for index, item, itemAmount in pairs(selectedRecipe) do
 		local itemStoredSlot = itemsSlot[item.name]
 		local currentAmount = item_to_transfer[index]
 		if currentAmount > 0 then
