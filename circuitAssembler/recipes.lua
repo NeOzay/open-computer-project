@@ -4,6 +4,7 @@ local resistor = "SMD Resistor"
 local capacitor = "SMD Capacitor"
 local transistor = "SMD Transistor"
 local fine_redAlloy = "Fine Red Alloy Wire"
+local fine_copper = "Fine Copper Wire"
 
 ---@param name string
 ---@param n number
@@ -31,6 +32,14 @@ recipes["Integrated Processor"] = {
 	item(capacitor, 4),
 	item(transistor,4),
 	item(fine_redAlloy, 4)
+}
+recipes["Microprocessor"] = {
+	item(plastic_board, 1),
+	item(cpu, 1),
+	item(resistor, 2),
+	item(capacitor, 2),
+	item(transistor,2),
+	item(fine_copper, 2)
 }
 
 return recipes

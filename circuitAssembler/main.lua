@@ -7,7 +7,7 @@ local term = require("term")
 local recipes = require("recipes")
 
 local assemblerSide = sides.north
-local drawerSide = sides.top
+local drawerSide = sides.bottom
 
 local itemsIterator = transposer.getAllStacks(drawerSide)
 

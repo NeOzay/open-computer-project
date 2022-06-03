@@ -1,8 +1,8 @@
 local component = require("component")
 local sides =  require("sides")
 local tankmanager = component.transposer
-local chemSize = sides.south
-local tankssides = {sides.top, sides.west}
+local chemSize = sides.north
+local tankssides = {sides.bottom, sides.top }
 
 local function getLiquidInChem()
 	local fluidsList = tankmanager.getFluidInTank(chemSize)
@@ -23,5 +23,5 @@ while true do
 			end
 		end
 	end
-	os.sleep(3)
+	os.sleep(5)
 end
