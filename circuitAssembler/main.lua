@@ -15,8 +15,7 @@ local itemsIterator = transposer.getAllStacks(drawerSide)
 local function selectRecipe()
 	local i = 0
 	local text = ""
-	---@type Item[][]
-	local list = {}
+	local list = {} ---@type Item[][]
 	for name, recipe in pairs(recipes) do
 		i = i + 1
 		text = text.."["..i.."]"..name..","
@@ -34,11 +33,9 @@ end
 ---@param recipe Item[]
 local function findItems(recipe)
 	itemsIterator.reset()
-	
-	---@type table<string, number>
-	local itemsSlot = {}
-	---@type {[string]:boolean}
-	local toFound = {}
+
+	local itemsSlot = {} ---@type table<string, number>
+	local toFound = {} ---@type {[string]:boolean}
 	for _, item in ipairs(recipe) do
 		toFound[item.name] = true
 	end
@@ -51,7 +48,7 @@ local function findItems(recipe)
 			itemsSlot[storedItemLabel] = i
 		end
 	end
-	
+
 	local missing = {}
 	local hasmissing = false
 	for name, bool in pairs(toFound) do
@@ -78,12 +75,10 @@ local function transferToAssembler(fromSlot, pushin, amount)
 end
 
 local function selectAmount()
-	---@type number
-	local amount
+	local amount ---@type number
 	print("amount(number)")
 	while type(amount) ~= "number" do
 		amount = tonumber(io.read())
-		print(type(amount))
 	end
 	return amount
 end
@@ -96,10 +91,9 @@ end
 
 local selectedRecipe, recipeAmount = request()
 local itemsSlot = findItems(selectedRecipe)
----@type table<number,number>
-local item_to_transfer = {}
-
+local item_to_transfer = {} ---@type table<number,number>
 local stringDecal = 0
+
 term.clear()
 for index, item in ipairs(selectedRecipe) do
 	stringDecal = math.max(stringDecal, #item.name)
@@ -117,7 +111,6 @@ local function getNext(t, index)
 	index, amount = next(t, index)
 	if not index then
 		index, amount = next(t)
-		os.sleep(10)
 	end
 	return index, amount
 end
@@ -151,13 +144,10 @@ local function loop(recipe, t2)
 end
 
 
-local function display()
-	for index, amount in pairs(item_to_transfer) do
-		local item = selectedRecipe[index]
-		local storedItem = transposer.getSlotStackSize(drawerSide, itemsSlot[item.name])
+local function display(index, slot, amount)
+		local storedItem = transposer.getSlotStackSize(drawerSide, slot)
 		gpu.set(stringDecal + 5, index, string.format("%.5d", amount))
 		gpu.set(stringDecal + 12, index, string.format("%.5d", storedItem))
-	end
 end
 
 local function main()
@@ -165,7 +155,7 @@ local function main()
 		local itemStoredSlot = itemsSlot[item.name]
 		local transfered = transferToAssembler(itemStoredSlot, index, itemAmount)
 		item_to_transfer[index] = itemAmount - transfered
-		display()
+		display(index, itemStoredSlot, item_to_transfer[index])
 	end
 end
 
