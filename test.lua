@@ -1,3 +1,8 @@
+local sides = require("doc.standard.sides")
+for i = 0, #sides -1 do
+	print(i)
+	
+end
 ---@type table<number, Item>
 local tt = {
 

@@ -1,3 +1,4 @@
+---@class Sides
 local sides = {
     [0] = "bottom",
     [1] = "top",
