@@ -1,3 +1,4 @@
+---@meta colors
 
 local colors = {
 	[0] = "white",

@@ -1,3 +1,5 @@
+---@meta event
+
 local event={}
 
 ---Register a new event listener that should be called for events with the specified name.

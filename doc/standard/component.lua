@@ -1,3 +1,5 @@
+---@meta component
+
 local component = {}
 
 ---Returns the documentation string for the method with the specified name of the component with the specified address, if any. Note that you can also get this string by using tostring on a method in a proxy, for example tostring(component.screen.isOn).
@@ -19,9 +21,10 @@ function component.invoke(address, method) end
 ---For example, component.list("red") will return redstone components.
 ---
 ---If true is passed as a second parameter, exact matching is enforced, e.g. red will not match redstone.
----@return componentBase[]
----@overload fun(filter:string ,exact:boolean):componentBase[]
-function component.list() end
+---@param filter? string
+---@param exact? boolean
+---@return table<string, string>|(fun():string, string)
+function component.list(filter, exact) end
 
 ---Returns a table with the names of all methods provided by the component with the specified address. The names are the keys in the table, the values indicate whether the method is called directly or not.
 ---@param address string

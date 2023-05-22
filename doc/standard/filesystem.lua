@@ -1,3 +1,4 @@
+---@meta filesystem
 
 local filesystem = {}
 
@@ -114,7 +115,7 @@ function filesystem.lastModified(path) end
 ---
 ---Note that directories usually are postfixed with a slash, to allow identifying them without an additional call to fs.isDirectory.
 ---@param path string
----@return function
+---@return fun():string
 function filesystem.list(path) end
 
 

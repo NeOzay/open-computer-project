@@ -59,7 +59,7 @@ function shell.resolve(path) end
 ---
 ---In case of errors, the second returned value is a detailed error message. Otherwise the remaining returned values are the values that were returned by the specified program when it terminated.
 ---@param command string
----@param env table
+---@param env? table
 ---@return boolean,any
 function shell.execute(command,env) end
 
