@@ -6,85 +6,11 @@ local component = require("component")
 
 local github = require("github")
 
-local gpu = component.gpu
-local screenw, screenl = gpu.getResolution()
-
 local args, opts = shell.parse(...)
 
 
 if opts.b and opts.t then
 	io.stderr:write("branch and tag could not define at the same time")
-end
-
----@return number,number
-local function getOffset()
-	local _, _, _, _, ox, oy = term.getViewport()
-	return ox, oy
-end
-
----@param barsize number 
----@return fun(percent:number):string @between 0 and 1
-local function newProgressbar(barsize)
-	local left = "["
-	local right = ("]%3d%%"):format(0)
-	local gap = barsize or 50 - #left - #right
-	local at
-	local tampon = 1
-	---@type string[]
-	local bar = {left, ">", right}
-	for i = 1, gap do
-		table.insert(bar, #bar, " ")
-	end
-	return coroutine.wrap(function(percent)
-		while true do
-
-			right = ("]%3d%%"):format(tostring(percent * 100))
-			table.remove(bar)
-			table.insert(bar, right)
-
-			at = math.floor(percent * (gap) + 0.5)
-			for i = tampon, gap + 2 do
-				if i < at + 2 then
-					table.insert(bar, 2, "=")
-					table.remove(bar, #bar - 1)
-				else
-					tampon = i
-					break
-				end
-			end
-			percent = coroutine.yield(table.concat(bar))
-		end
-	end)
-end
-
----@param initLine number
----@param drawFn fun(currentLine:number,text:string|number,...)
-local function newDisplay(initLine, drawFn)
-	---@type number
-	local currentLine
-	if initLine == 1 then
-		currentLine = initLine
-		initLine = initLine + 1
-		term.setCursor(1, initLine)
-	else
-		currentLine = initLine - 1
-		term.setCursor(1, initLine)
-	end
-
-	local isBottom = false
-	return ---@param text string|number
-	function(text, ...)
-		text = tostring(text)
-		local _, yo = getOffset()
-		if yo == 50 then
-			if isBottom then
-				currentLine = math.max(currentLine - 1, 1)
-			else
-				isBottom = true
-			end
-		end
-		drawFn(currentLine, text, ...)
-	end
 end
 
 local function sizeStr(bytes)
@@ -120,6 +46,7 @@ local function hasEnoughSpace(locate, repoSize)
 		end
 		return validAnswers[input:lower()] == 'yes'
 	end
+
 	local errStr = "Repository is %s, but only %s are free on this computer. Aborting!"
 	errStr = errStr:format(sizeStr(repoSize), sizeStr(freeSpace))
 	if repoSize > freeSpace then
@@ -147,34 +74,32 @@ end
 
 if args[1] == "clone" then
 	local user, repoName = getRepoName(args[2])
-	local dest = shell.resolve(args[3] or repoName)
+	local dest = shell.resolve(args[3] or "")
+	if args[3] and string.sub(dest, -1, -1) == "/" then
+		
+	end
+	local dest = shell.resolve(args[3] or (args.s or filesystem.name(args.s)) or repoName)
 	local auth
 	if opts.a then
 		auth = github.Auth.get(opts.a)
+		if not auth then
+			io.stderr:write("no auth found for "..opts.a)
+		return
+		end
 	end
 	print("fetch repo")
-	local repo = github.repo(user, repoName, {auth = auth, branch = opts.b, tag = opts.t, latestRelease = opts.r})
-
+	local repo = github.repo(user, repoName, {auth = auth, branch = opts.b, tag = opts.t, latestRelease = opts.r, subdir = opts.s})
 
 	local repoSize = repo:getRepoSize()
 	local size = 0
 	print("check available space")
 	hasEnoughSpace(dest, repoSize)
 
-	local progressbar = newProgressbar(screenw - #"Downloading:" - 7)
-	--print(screenw - #"Downloading:" - 7)
-	local _, oy = getOffset()
-
-	local display = newDisplay(oy, function(line, text)
-		gpu.fill(1, line, screenl, 1, " ")
-		gpu.set(1, line, text)
-	end)
 	print("start Downloading")
 	repo:cloneTo(dest, function(item)
 		if getmetatable(item) == github.Blob then ---@cast item Blob
-			--print(item:fullPath())
+			print(item.fullpath)
 			size = size + item.size
-			--display("Downloading:" .. progressbar(size / repoSize))
 		end
 	end)
 	return
@@ -193,9 +118,10 @@ if args[1] == "subclone" then
 		auth = github.Auth.get(opts.a)
 		if not auth then
 			io.stderr:write("no auth found for "..opts.a)
-		return	
+		return
 		end
 	end
+
 	print("fetch repo")
 	local repo = github.repo(user, repoName, {auth = auth, branch = opts.b, tag = opts.t, latestRelease = opts.r, subdir = subdir})
 	print("start Downloading")
@@ -203,19 +129,29 @@ if args[1] == "subclone" then
 	local size = 0
 	print("check available space")
 	hasEnoughSpace(dest, repoSize)
-	repo:cloneTreeTo(dest, subdir)
+	repo:cloneTreeTo(dest, subdir, function (item, _, tree)
+		if getmetatable(item) == github.Blob then ---@cast item Blob
+		print(item:relatifPath(tree))
+			size = size + item.size
+		end
+	end)
 	return
 end
 
 if args[1] == "auth" then
-	local user, token = args[2], args[3]
+	local user, token = args[2], args[3] ---@type string, string
 	if not user then
 		return error("No user specified.")
 	end
 
 	if args.d then
-		github.Auth.delete(user)
-		print(('Deleted github token for user %s'):format(user))
+		local auth = github.Auth.get(user)
+		if auth then
+			auth:delete()
+			print(('Deleted github token for user %s'):format(user))
+		else
+			print('token not found')
+		end
 	else
 		if not token then
 			return error("No token specified.")
@@ -225,7 +161,8 @@ if args[1] == "auth" then
 			auth:save()
 			print(('Saved github token for user %s'):format(auth.user))
 		else
-			return error("Invalid token!")
+			io.stderr:write("Invalid token!")
+			return
 		end
 	end
 

@@ -1,0 +1,26 @@
+NAME
+  git - the stupid content tracker
+Description
+  provides a way to clone a Github Repositories or subpart
+  Examble: git clone MightyPirates/OpenComputers
+           for clone openOS:
+           git subclone MightyPirates/OpenComputers --s=src/main/resources/assets/opencomputers/loot/openos
+
+OPTIONS
+clone <user>/<repo> [-b <branchname> | -t <tagname>] [<destination>] [-a <username>]
+  --b, --branch  branch name
+			['--branch'] = 'branch',
+			['-t'] = 'tag',
+			['--tag'] = 'tag',
+			['-a'] = 'authed',
+			['-auth'] = 'authed'
+		}
+	},
+	auth = {
+		usage = "github auth <user> [<api token> | -d ]",
+		flags = {
+			['-d'] = 'delete',
+			['--delete'] = 'delete'
+		}
+	}
+}

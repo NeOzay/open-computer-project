@@ -27,13 +27,13 @@ local function getAPI(path, auth)
 
   --print(url)
   local handle = inet.request(url, nil, headers)
-
-  local rawReponce = { handle.response() }
   local json = {}
   for chunk in handle do
     table.insert(json, chunk)
   end
   local data = JSON.decode(table.concat(json)) ---@cast data table
+  handle.finishConnect()
+  local rawReponce = { handle.response() }
   ---@class response
   ---@field code number
   ---@field message string
@@ -63,7 +63,7 @@ local function downloadFile(blob, sha, path)
   end
   local url = ('https://raw.githubusercontent.com/%s/%s/%s/%s'):format(blob.repo.user, blob.repo.name, sha,
     encodeURI(blob.fullpath))
-  print(url)
+  --print(url)
   local handle = inet.request(url, nil, headers)
   if handle then
     local h, reason = io.open(path, 'w')
@@ -147,7 +147,6 @@ end
 
 function Auth:checkToken()
   local status, _ = getAPI('user', self)
-  print(status.code)
   return status.code == 200
 end
 
@@ -170,20 +169,6 @@ function Blob.new(repo, sha, fullpath)
   return setmetatable({ repo = repo, sha = sha, fullpath = fullpath, path = fs.name(fullpath) }, Blob)
 end
 
----@return string
-function Blob:fullPath11()
-  ---@type string
-  local fullpath
-  if self.parent then
-    fullpath = fs.concat(self.parent.fullpath, self.path)
-    function self:fullpath11() return fullpath end
-
-    return fullpath
-  else
-    return self.path
-  end
-end
-
 ---@param relatif? Tree
 function Blob:relatifPath(relatif)
   if self.parent and self ~= relatif then
@@ -199,10 +184,8 @@ end
 ---@param file string
 local function include(subdir, file)
   local cut_file = fs.segments(file)
-  print(subdir, file)
   for i, s in ipairs(fs.segments(subdir)) do
     if cut_file[i] and cut_file[i] ~= s then
-      print(subdir, file)
       return false
     elseif not cut_file[i] then
       return true
@@ -405,7 +388,7 @@ end
 
 ---@param dest string
 ---@param subdir string
----@param onProgress? fun(item:Blob|Tree, number:number)
+---@param onProgress? fun(item:Blob|Tree, number:number, tree:Tree)
 function Repository:cloneTreeTo(dest, subdir, onProgress)
   local subdir_parts = fs.segments(subdir)
   local tree = __repoPriv[self].trees[self.sha] ---@type Tree
@@ -427,7 +410,9 @@ function Repository:cloneTreeTo(dest, subdir, onProgress)
   end
 
   if tree then
-    tree:cloneTo(dest, onProgress)
+    tree:cloneTo(dest, onProgress and function (item, number)
+      return onProgress(item, number, tree)
+    end)
   else
     error("no tree found")
   end
