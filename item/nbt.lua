@@ -1,7 +1,7 @@
 local math = require("math")
 local bit32 = require("bit32")
 
-data = {}
+local data = {}
 data.raw = {'\1','\0', '\1' ,'A','\162'}
 data.pointer = 1
 data.size = #data.raw

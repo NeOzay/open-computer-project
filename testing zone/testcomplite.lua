@@ -1,5 +1,5 @@
-component = require("component")
-filesystem = require("filesystem")
+local component = require("component")
+local filesystem = require("filesystem")
 --sides =  require("sides")
 --colors = require("colors")
 

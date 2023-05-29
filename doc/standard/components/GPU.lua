@@ -1,3 +1,4 @@
+---@meta gpu
 
 ---@class gpu:componentBase
 local gpu={}

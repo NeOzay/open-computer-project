@@ -1,3 +1,5 @@
+---@meta screen
+
 ---@class screen:componentBase
 local screen = {}
 

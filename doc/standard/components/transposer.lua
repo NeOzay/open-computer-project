@@ -1,3 +1,5 @@
+---@meta transposer
+
 ---@class transposer:componentBase
 local transposer = {}
 

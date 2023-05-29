@@ -22,7 +22,7 @@ function filesystem.canonical(path,...) end
 
 ---Returns a table containing one entry for each canonical segment of the given path.
 ---@param path string
----@return table
+---@return string[]
 function filesystem.segments(path) end
 
 ---Concatenates two or more paths. Note that all paths other than the first are treated as relative paths, even if they begin with a slash. The canonical form of the resulting concatenated path is returned, so fs.concat("a", "..") results in an empty string.
@@ -157,7 +157,7 @@ function filesystem.copy(fromPath,toPath) end
 ---When opening files directly via the file system API you will get a file stream, a table with four functions. These functions are thin wrappers to the file system proxy's callbacks, which also means that read/write operations are not buffered, and can therefore be slow when reading few bytes often. You'll usually want to use io.open instead.
 ---@param path string
 ---@param mode string
----@return ocFile, string
+---@return ocFile?, string?
 function filesystem.open(path,mode) end
 
 

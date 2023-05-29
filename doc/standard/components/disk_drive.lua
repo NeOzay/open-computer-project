@@ -1,3 +1,4 @@
+---@meta disk_drive
 
 ---@class disk_drive:componentBase
 ---@field address string

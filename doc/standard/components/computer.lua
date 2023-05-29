@@ -1,3 +1,4 @@
+---@meta computer
 
 ---@class computer:componentBase
 local computer ={}

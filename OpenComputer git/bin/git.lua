@@ -1,3 +1,4 @@
+package.loaded.github=nil
 local shell = require("shell")
 local term = require("term")
 local filesystem = require("filesystem")
@@ -10,10 +11,9 @@ local screenw, screenl = gpu.getResolution()
 
 local args, opts = shell.parse(...)
 
-local _
 
 if opts.b and opts.t then
-	error("")
+	io.stderr:write("branch and tag could not define at the same time")
 end
 
 ---@return number,number
@@ -115,7 +115,7 @@ local function hasEnoughSpace(locate, repoSize)
 		local validAnswers = {[''] = 'yes', y = 'yes', yes = 'yes', n = 'no', no = 'no'}
 		local input = io.read()
 		while not validAnswers[input:lower()] do
-			print("Please type [y]es or [n]o")
+			io.write("Please type [y]es or [n]o: ")
 			input = io.read()
 		end
 		return validAnswers[input:lower()] == 'yes'
@@ -133,38 +133,77 @@ local function hasEnoughSpace(locate, repoSize)
 	end
 end
 
+---@param s string
+---@return string, string
+local function getRepoName(s)
+	s = s or ""
+	local user, repo = s:match('^(.-)/(.+)$')
+	if not user or not repo then
+		io.stderr:write("error: give form like git clone <user>/<repo>")
+		os.exit()
+	end
+	return user, repo
+end
+
 if args[1] == "clone" then
-	local user, repoName = args[2]:match('^(.-)/(.+)$')
+	local user, repoName = getRepoName(args[2])
 	local dest = shell.resolve(args[3] or repoName)
-	local treeName = opts.b or opts.t or "master"
 	local auth
 	if opts.a then
 		auth = github.Auth.get(opts.a)
 	end
-	local repo = github.repo(user, repoName, auth)
+	print("fetch repo")
+	local repo = github.repo(user, repoName, {auth = auth, branch = opts.b, tag = opts.t, latestRelease = opts.r})
 
-	local tree = repo:tree(treeName)
 
-	local repoSize = tree.size
+	local repoSize = repo:getRepoSize()
 	local size = 0
+	print("check available space")
 	hasEnoughSpace(dest, repoSize)
 
 	local progressbar = newProgressbar(screenw - #"Downloading:" - 7)
-	print(screenw - #"Downloading:" - 7)
+	--print(screenw - #"Downloading:" - 7)
 	local _, oy = getOffset()
 
 	local display = newDisplay(oy, function(line, text)
 		gpu.fill(1, line, screenl, 1, " ")
 		gpu.set(1, line, text)
 	end)
-
-	tree:cloneTo(dest, function(item)
-		if getmetatable(item) == github.Blob then
-			print(item:fullPath())
+	print("start Downloading")
+	repo:cloneTo(dest, function(item)
+		if getmetatable(item) == github.Blob then ---@cast item Blob
+			--print(item:fullPath())
 			size = size + item.size
-			display("Downloading:" .. progressbar(size / repoSize))
+			--display("Downloading:" .. progressbar(size / repoSize))
 		end
 	end)
+	return
+end
+
+if args[1] == "subclone" then
+	local user, repoName = getRepoName(args[2])
+	local subdir = opts.s
+	if not opts.s then
+		io.write("give the path of the subfolder to clone: ")
+		subdir = io.read()
+	end
+	local dest = shell.resolve(args[3] or filesystem.name(subdir))
+	local auth
+	if opts.a then
+		auth = github.Auth.get(opts.a)
+		if not auth then
+			io.stderr:write("no auth found for "..opts.a)
+		return	
+		end
+	end
+	print("fetch repo")
+	local repo = github.repo(user, repoName, {auth = auth, branch = opts.b, tag = opts.t, latestRelease = opts.r, subdir = subdir})
+	print("start Downloading")
+	local repoSize = repo:getRepoSize()
+	local size = 0
+	print("check available space")
+	hasEnoughSpace(dest, repoSize)
+	repo:cloneTreeTo(dest, subdir)
 	return
 end
 
