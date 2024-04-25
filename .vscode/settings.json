@@ -9,17 +9,13 @@
 		},
 		"editor.suggest.insertMode": "replace"
 	},
-	"Lua.runtime.version": "LuaJIT",
-	"workbench.iconTheme": "material-icon-theme",
+	"Lua.runtime.version": "Lua 5.3",
 	"material-icon-theme.folders.theme": "specific",
 	"editor.glyphMargin": true,
 	"editor.folding": true,
-	//"editor.lineNumbers": "off",
-	"workbench.activityBar.visible": true,
 	"editor.lineDecorationsWidth": 0, // undocumented
 	//"editor.lineNumbersMinChars": 5,  // undocumented
 	"editor.columnSelection": false,
-	"Lua.color.mode": "Semantic",
 	"files.exclude": {
 		"**/.git": true,
 		"**/.svn": true,
@@ -28,9 +24,18 @@
 		"**/.DS_Store": true
 	},
 	"Lua.workspace.library": [
-		"C:/Users/colpa/Documents/Code_Informatique/LUA/Open Computer/Open Computer documentation"
+		"C:/Users/colpa/IdeaProjects/Open Computer Project/doc/standard/lib",
+		"C:/Users/colpa/IdeaProjects/Open Computer Project/doc/standard/components",
+		"C:/Users/colpa/IdeaProjects/Open Computer Project/doc/openOS/lib/",
+		
 	],
-	"pixelbyte.love2d.runOnSave": false,
+
+	"Lua.workspace.ignoreDir":[
+		".vscode",
+		"doc",
+		"openOS"
+	],
+	"Lua.runtime.pathStrict": false,
 	"Lua.hint.setType": true,
 	"Lua.workspace.checkThirdParty": false,
 	"Lua.semantic.annotation": true,

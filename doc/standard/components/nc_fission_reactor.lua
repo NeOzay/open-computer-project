@@ -1,4 +1,6 @@
----@class nc_fission_reactor:componentBase
+---@meta _
+
+---@class nc_fission_reactor:ProxyBase
 local nc_fission_reactor = {}
 
 function nc_fission_reactor.getEnergyStored() end

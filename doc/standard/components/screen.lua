@@ -1,6 +1,6 @@
----@meta screen
+---@meta _
 
----@class screen:componentBase
+---@class screen:ProxyBase
 local screen = {}
 
 ---Returns whether the screen is currently on.

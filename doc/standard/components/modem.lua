@@ -1,6 +1,6 @@
----@meta modem
+---@meta _
 
----@class modem:componentBase
+---@class modem:ProxyBase
 local modem = {}
 
 

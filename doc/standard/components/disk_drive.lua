@@ -1,6 +1,6 @@
----@meta disk_drive
+---@meta _
 
----@class disk_drive:componentBase
+---@class disk_drive:ProxyBase
 ---@field address string
 local disk_drive = {}
 disk_drive.slot = -1

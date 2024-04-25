@@ -1,6 +1,6 @@
----@meta transposer
+---@meta _
 
----@class transposer:componentBase
+---@class transposer:ProxyBase
 local transposer = {}
 
 ---Transfer some fluids between two fluid handlers (pipes or tanks, etc).
@@ -136,4 +136,5 @@ function transposer.getAllStacks(side) end
 ---@field maxSize number
 ---@field name string
 ---@field size number
----@field domage number
+---@field damage number
+---@field id number

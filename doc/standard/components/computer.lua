@@ -1,7 +1,7 @@
----@meta computer
+---@meta _
 
----@class computer:componentBase
-local computer ={}
+---@class computer:ProxyBase
+local computer = {}
 
 
 ---Tries to start the computer. Returns **true** on success, **false** otherwise. Note that this will also return **false** if the computer was already running. If the computer is currently shutting down, this will cause the computer to reboot instead.
@@ -37,3 +37,5 @@ function computer.getArchitecture()end
 ---Returns whether or not the computer is, in fact, a robot.
 ---@return boolean
 function computer.isRobot()end
+
+return computer

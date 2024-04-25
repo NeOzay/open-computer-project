@@ -1,6 +1,6 @@
----@meta tunnel
+---@meta _
 
----@class tunnel:componentBase
+---@class tunnel:ProxyBase
 local tunnel = {}
 
 

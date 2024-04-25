@@ -1,6 +1,6 @@
----@meta gpu
+---@meta _
 
----@class gpu:componentBase
+---@class gpu:ProxyBase
 local gpu={}
 
 ---Tries to bind the GPU to a screen with the specified address. Returns true on success, false and an error message on failure.
