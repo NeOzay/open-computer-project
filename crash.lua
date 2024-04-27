@@ -1,13 +1,20 @@
 local shell = require("shell")
 local fs = require("filesystem")
 
-local args = {...}
-local elog = shell.resolve(table.remove(args, 1))
-local path = shell.resolve(table.remove(args, 1))
+local args, opts = shell.parse(...)
 
-if not elog or not path then
+
+
+if not args[1] or not args[2] then
   print("USAGE: crash <error log path> <path to program> [arguments...]")
   return 1
+end
+
+local elog = shell.resolve(args[1])
+local path = shell.resolve(args[2])
+
+if not fs.exists(path) and fs.exists("/bin/"..args[2]) then
+  path = "/bin/"..args[2]
 end
 
 if not fs.exists(path) or fs.isDirectory(path) then
