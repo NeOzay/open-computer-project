@@ -41,5 +41,6 @@
 	"Lua.semantic.annotation": true,
 	"Lua.semantic.keyword": true,
 	"Lua.semantic.variable": true,
-	"vscode-lua-format.configPath": ".vscode/lua-format.txt"
+	"vscode-lua-format.configPath": ".vscode/lua-format.txt",
+	"files.associations": {"*.cfg": "lua" },
 }
