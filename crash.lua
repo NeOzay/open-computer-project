@@ -13,8 +13,8 @@ end
 local elog = shell.resolve(args[1])
 local path = shell.resolve(args[2])
 
-if not fs.exists(path) and fs.exists("/bin/"..args[2]) then
-  path = "/bin/"..args[2]
+if not fs.exists(path) and fs.exists("/bin/"..args[2]..".lua") then
+  path = "/bin/"..args[2]..".lua"
 end
 
 if not fs.exists(path) or fs.isDirectory(path) then
