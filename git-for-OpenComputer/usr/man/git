@@ -1,0 +1,22 @@
+NAME
+  git - the stupid content tracker
+Description
+  Provides a way to clone a Github Repositories or subpart
+  Examble: 
+    git clone MightyPirates/OpenComputers
+    for clone openOS:
+    git clone --d=src/main/resources/assets/opencomputers/loot/openos MightyPirates/OpenComputers
+Usage
+	clone [--b=<branchname> | --t=<tagname> | -r] [--d=<path>|--d] [--i=<exe>|--i|--I] [--a=<username>] <user>/<repo> [<destination>] 
+		flags
+			--b  branch name
+			--t  tag name
+			-r   last release
+			--a  user defined with auth command
+      --d  subpart to clone
+			--i  replaces the list of ignored files or directories, default: md,png,jpeg,docx,xlsx
+      --I  extends the list of ignored files or directories, default: md,png,jpeg,docx,xlsx
+
+	auth <user> [<api_token> | -d ]
+		flags
+			-d   delete
