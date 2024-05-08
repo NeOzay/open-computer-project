@@ -94,7 +94,7 @@ end
 
 if args[1] == "clone" then
 	local user, repoName = getRepoName(args[2])
-	local dest = shell.resolve(args[3] or (args.d and filesystem.name(args.d)) or repoName)
+	local dest = shell.resolve(args[3] or (opts.d and filesystem.name(opts.d)) or repoName)
 	local token
 	if opts.a then
 		token = github.Auth.get(opts.a)
@@ -125,19 +125,15 @@ if args[1] == "clone" then
 		{ token = token, branch = opts.b, tag = opts.t, latestRelease = opts.r, subdir = opts.d, excluded = excluded_type })
 
 	local repoSize = repo:getRepoSize()
-	local size = 0
 	print("check available space")
 	hasEnoughSpace(dest, repoSize)
 
 	print("start Downloading:")
 	local already_download = 0
-	repo:cloneTo(dest, function(item, number, root)
-		if getmetatable(item) == github.Blob then ---@cast item Blob
+	repo:cloneTo(dest, function(tree, file)
 			already_download = already_download + 1
-			local count = string.format(" [%-2d/%2d]", already_download, root.blobsCount)
-			print(count.."  "..item:relatifTo(root))
-			size = size + item.size
-		end
+			local count = string.format(" [%-2d/%2d]", already_download, tree.blobsCount)
+			print(count.."  "..file)
 	end, opts.d)
 
 

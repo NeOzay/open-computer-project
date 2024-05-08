@@ -23,7 +23,7 @@ local internet = {}
 function internet.request(url, data, headers, method) end
 
 ---@class handle
----@operator call:string
+---@overload fun():string
 local handle = {}
 
 ---@return number code, string message, table headers

@@ -49,9 +49,9 @@ function shell.setPath(value) end
 ---
 ---If no file with the exact specified name exists and an extension is provided, it will also check for a file with that name plus the specified extension, i.e. for path .. "." .. ext.
 ---@param path string
+---@param exe? string
 ---@return string
----@overload fun(path: string, ext: string): string)
-function shell.resolve(path) end
+function shell.resolve(path, exe) end
 
 
 ---Runs the specified command. This runs the default shell (see os.getenv("SHELL")) and passes the command to it. env is the environment table to use for the shell, and thus for the called program, in case you wish to sandbox it or avoid it cluttering the caller's namespace.

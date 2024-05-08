@@ -11,7 +11,7 @@
 	},
 	"Lua.runtime.version": "Lua 5.3",
 	"material-icon-theme.folders.theme": "specific",
-	"editor.glyphMargin": true,
+	"editor.glyphMargin": false,
 	"editor.folding": true,
 	"editor.lineDecorationsWidth": 0, // undocumented
 	//"editor.lineNumbersMinChars": 5,  // undocumented

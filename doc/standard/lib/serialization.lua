@@ -21,7 +21,7 @@ function serialization.serialize(value) end
 ---Restores an object previously saved with serialization.serialize.
 ---Contents
 ---@param value string
----@return any
+---@return any|nil data, string? errormsg
 function serialization.unserialize(value) end
 
 return serialization
