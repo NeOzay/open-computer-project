@@ -83,13 +83,12 @@ end
 
 local function init()
 	manager.createAllPlots()
-	manager.resetNexPlot()
 	manager.setupAllPlot()
 end
 
 
 local function runtime()
-	for plot in manager.nextPlot do
+	for plot in manager.plotsIterator() do
 		print("plot:", plot.x, plot.y)
 		for x, y, t in plot:Iterator() do
 			gps.go(x, y)
@@ -115,7 +114,7 @@ local function main()
 	while running and runtime() do
 		action.restockAll()
 	end
-	for plot in manager.nextPlot do
+	for plot in manager.plotsIterator() do
 		plot:cleanUp()
 	end
 	gps.goHome()

@@ -7,10 +7,6 @@ local config = require('autocrop.config')
 
 local manager = require('autocrop.manager')
 
-
-
-local lowestStat = 0
-
 local running = true
 
 ---@param crop crop
@@ -34,9 +30,7 @@ local function checkChild(plot, crop)
 
 			action.placeCropStick(2)
 			scanner.scan()
-			if stat < lowestStat then
-				lowestStat = stat
-			end
+
 			plot:updateLowerCrop()
 		else
 			action.deweed()
@@ -72,14 +66,13 @@ end
 
 local function init()
 	manager.createAllPlots()
-	manager.resetNexPlot()
 	manager.setupAllPlot()
 end
 
 
 local cleanUp = {}
 local function runtime()
-	for plot in manager.nextPlot do
+	for plot in manager.plotsIterator() do
 		print("plot:", plot.x, plot.y)
 		for x, y, t in plot:Iterator() do
 			if cleanUp[plot] then
@@ -88,6 +81,7 @@ local function runtime()
 			if plot.lowestStat >= config.autoStatThreshold then
 				plot:cleanUp()
 				cleanUp[plot] = true
+				break
 			end
 			gps.go(x, y)
 			local crop = scanner.scan()
@@ -97,7 +91,6 @@ local function runtime()
 			else
 				checkParent(plot, crop)
 			end
-
 			if action.needCharge() then
 				action.charge()
 			end
@@ -106,19 +99,23 @@ local function runtime()
 	return true
 end
 
-
+local index = 0
 local function main()
 	init()
 	while running and runtime() do
-		print("runtime end")
+		index = index + 1
+		print("runtime ".. index.." end")
 		action.restockAll()
-		if lowestStat >= config.autoStatThreshold then
-			print('autoStat: Minimum Stat Threshold Reached!')
-			running = false
-			return false
+		running = false
+		for plot in manager.plotsIterator() do
+			if plot.lowestStat < config.autoStatThreshold then
+				running = true
+				break
+			end
 		end
 	end
-	for plot in manager.nextPlot do
+	print('autoStat: Minimum Stat Threshold Reached!')
+	for plot in manager.plotsIterator() do
 		if not cleanUp[plot] then
 			plot:cleanUp()
 		end

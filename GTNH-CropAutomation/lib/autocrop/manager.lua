@@ -28,7 +28,7 @@ manager.plots = {}
 
 function manager.setupAllPlot()
 	gps.goHome()
-	for plot in manager.nextPlot do
+	for plot in manager.plotsIterator() do
 		print("plot:", plot.x, plot.y)
 		plot:setup()
 		plot:updateLowerCrop()
@@ -50,11 +50,17 @@ function manager.createAllPlots()
 	local yflip = false
 	local xflip = false
 	for x = 0, floorFarmWidth - 1, plotWidth do
+		local column = {} ---@type Plot[]
 		for y = 1, floorFarmHeight, plotHeight do
-			y = yflip and (floorFarmHeight - y - 1) or y
+			table.insert(column, Plot.new(-x, y, -plotWidth, plotHeight, nil, yflip))
+		end
+		for i=1, #column  do
 			index = index + 1
-			print(index, x .. "-" .. y .. " " .. tostring(yflip))
-			table.insert(manager.plots, Plot.new(-x, y, -plotWidth, plotHeight, xflip, yflip))
+			i = (yflip and #column + 1 - i) or i
+			local plot = column[i]
+			print(index, plot.x .. "-" .. plot.y .. " " .. tostring(yflip))
+			plot.flipWidth = xflip
+			table.insert(manager.plots, plot)
 			xflip = not xflip
 		end
 		--reverse all
@@ -63,18 +69,12 @@ function manager.createAllPlots()
 	end
 end
 
-local last
---get the next plot
----@return Plot?
-function manager.nextPlot()
-	local v
-	last, v = next(manager.plots, last)
-	return v
-end
-
---reset the next plot iterator
-function manager.resetNexPlot()
-	last = nil
+function manager.plotsIterator()
+	local last, v
+	return function ()
+		last, v = next(manager.plots, last)
+		return v
+	end
 end
 
 local firstStorage = Plot.new(2, 9, 6, -16)
