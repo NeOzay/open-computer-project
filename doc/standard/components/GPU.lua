@@ -112,6 +112,16 @@ function gpu.get(x,y) end
 ---@overload fun(x: number, y: number, value: string, vertical:boolean): boolean
 function gpu.set(x,y,value) end
 
+---Copies a portion of the screens buffer to another location. The source rectangle is specified by the x, y, width and height parameters. The target rectangle is defined by x + tx, y + ty, width and height. Returns true on success, false otherwise.
+---@param x number
+---@param y number
+---@param width number
+---@param height number
+---@param tx number
+---@param ty number
+---@return boolean
+function gpu.copy(x, y, width, height, tx, ty) end
+
 ---Fills a rectangle in the screen buffer with the specified character. The target rectangle is specified by the x and y coordinates and the rectangle's width and height. The fill character char must be a string of length one, i.e. a single character. Returns true on success, false otherwise.
 ---
 ---Note that filling screens with spaces ( ) is usually less expensive, i.e. consumes less energy, because it is considered a “clear” operation (see config).

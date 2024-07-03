@@ -65,6 +65,7 @@ function term.clearLine() end
 ---@param dobreak? boolean
 ---@param hint? table|function
 ---@param pwchar? string
+---@return string
 function term.read(history, dobreak, hint, pwchar) end
 
 ---Allows writing optionally wrapped text to the terminal starting at the current cursor position, updating the cursor accordingly. It automatically converts tab characters to spaces using `text.detab`. If `wrap` is true, it will automatically word-wrap the text. It will scroll the displayed buffer if the cursor exceeds the bottom of the display area, but not if it exceeds the right of the display area (when `wrap` is false).

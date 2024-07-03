@@ -112,8 +112,8 @@ function computer.pullSignal(timeout) end
 --- If frequency is a number, its value must be between 20 and 2000.
 ---
 --- This method is overloaded taking a single string parameter as a pattern of dots . and dashes - for short and long beeps respectively.
---- @param frequency string|number @Optional. The frequency of the beep sound.
---- @param duration number @Optional. The duration of the beep sound.
+--- @param frequency? string|number @Optional. The frequency of the beep sound.
+--- @param duration? number @Optional. The duration of the beep sound.
 function computer.beep(frequency, duration) end
 
 --- Returns a table of information about installed devices in the computer.

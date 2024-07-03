@@ -164,6 +164,7 @@ function filesystem.open(path,mode) end
 
 
 ---@class ocFile
+---@field fs filetype
 local ocFile = {}
 
 ---Closes the file stream, releasing the handle on the underlying file system.
@@ -171,7 +172,7 @@ function ocFile:close() end
 
 
 ---Tries to read the specified number of bytes from the file stream. Returns the read string, which may be shorter than the specified number. Returns nil when the end of the stream was reached. Returns nil and an error message if some error occurred.
----@param n number
+---@param n number|'*a'
 ---@return string,string
 function ocFile:read(n) end
 
@@ -199,9 +200,9 @@ function disk.spaceUsed() end
 
 ---Opens a new file descriptor and returns its handle.
 ---@param path string
+---@param mode? string
 ---@return number
----@overload fun(path:string,mode:"r"):number
-function disk.open(path) end
+function disk.open(path, mode) end
 
 ---Seeks in an open file descriptor with the specified handle. Returns the new pointer position.
 ---@param handle number
@@ -275,6 +276,7 @@ function disk.size(path) end
 ---Reads up to the specified amount of data from an open file descriptor with the specified handle. Returns nil when end of file is reached.
 ---@param handle number
 ---@param count number
+---@return string?
 function disk.read(handle,count) end
 
 

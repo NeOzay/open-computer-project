@@ -70,9 +70,9 @@ function transposer.getTankLevel(side,tank) end
 ---Transfer some items between two inventories.
 ---@param sourceSide number
 ---@param sinkSide number
----@param count number
----@param sourceSlot number
----@param sinkSlot number
+---@param count? number
+---@param sourceSlot? number
+---@param sinkSlot? number
 ---@return number
 function transposer.transferItem(sourceSide,sinkSide,count,sourceSlot,sinkSlot) end
 
@@ -98,7 +98,7 @@ function transposer.getTankCount(side) end
 ---Get a description of the stack in the inventory on the specified side of the device.
 ---@param side number
 ---@param slot number
----@return ItemStack
+---@return ItemStack?
 function transposer.getStackInSlot(side, slot) end
 
 ---Get the capacity of the specified tank on the specified side.
@@ -120,10 +120,11 @@ function transposer.getTankCapacity(side,tank) end
 ---``reset()``\
 ---Reset the iterator index so that the next call will return the first element.
 ---@param side number
----@return ItemIterator|fun():ItemStack
+---@return ItemIterator
 function transposer.getAllStacks(side) end
 
 ---@class ItemIterator
+---@overload fun():ItemStack
 ---@field getAll fun():ItemStack[] @Returns ALL the stack in the this.array. Memory intensive.
 ---@field count fun():number @Returns the number of elements in the this.array.
 ---@field reset fun() @Reset the iterator index so that the next call will return the first element.
@@ -132,7 +133,7 @@ function transposer.getAllStacks(side) end
 ---@class ItemStack
 ---@field hasTag boolean
 ---@field label string
----@field maxDomage number
+---@field maxDamage number
 ---@field maxSize number
 ---@field name string
 ---@field size number

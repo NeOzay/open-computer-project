@@ -16,6 +16,9 @@ function component.doc(address, method) end
 ---@return any ...
 function component.invoke(address, method, ...) end
 
+---@class componentLib.list
+---@overload fun():string, string
+
 ---Returns a table with all components currently attached to the computer, with address as a key and component type as a value. It also provides iterator syntax via __call.
 ---
 ---If filter is set this will only return components that contain the filter string (this is not a pattern/regular expression).
@@ -25,7 +28,7 @@ function component.invoke(address, method, ...) end
 ---If true is passed as a second parameter, exact matching is enforced, e.g. red will not match redstone.
 ---@param filter? string
 ---@param exact? boolean
----@return table<string, string>|(fun():string, string)
+---@return componentLib.list|table<string, string>
 function component.list(filter, exact) end
 
 ---Returns a table with the names of all methods provided by the component with the specified address. The names are the keys in the table, the values indicate whether the method is called directly or not.
