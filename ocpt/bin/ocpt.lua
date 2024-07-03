@@ -114,6 +114,7 @@ if args[1] == "install" then
 		io.stderr:write("No package specified\n")
 		return
 	end
+	print("searching package: " .. args[2].."...")
 	local pack = ocpt.getPackage(args[2])
 	if not pack then
 		io.stderr:write("Package does not exist\n")
@@ -130,7 +131,19 @@ if args[1] == "install" then
 end
 
 if args[1] == "floppy" then
-	installToFloppy(args[2], args[3], false)
+	if not args[2] then
+		io.stderr:write("No package specified\n")
+		return
+	end
+	if not args[3] then
+		io.stderr:write("No disk address specified\n")
+	end
+	local pack = ocpt.getPackage(args[2])
+	if not pack then
+		io.stderr:write("Package does not exist\n")
+		return
+	end
+	print(pack:addToDisk(args[3]))
 	return
 end
 
@@ -146,10 +159,12 @@ if args[1] == "update" then
 		end
 		return
 	end
+	print("Updating package '" .. args[2] .. "'")
 	local success, msg = ocpt.update(args[2])
 	if not success then
 		io.stderr:write("Failed to update package: " .. msg .. "\n")
-		return
+	else
+		print("Package updated successfully")
 	end
 	return
 end

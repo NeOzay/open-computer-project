@@ -1,7 +1,7 @@
 local bit32 = require("mineOS.Bit32")
 local unicode = require("unicode")
 
----@class filesystem2:filesystemLib
+---@class MineOS.filesystemLib:filesystemLib
 local filesystem = setmetatable({}, {__index = require("filesystem")})
 
 local BUFFER_SIZE = 1024

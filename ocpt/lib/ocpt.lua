@@ -1,6 +1,7 @@
 local component = require("component")
+local computer = require("computer")
 local event = require("event")
-local fs = require("filesystem")
+local filesystem = require("filesystem")
 local serial = require("serialization")
 local shell = require("shell")
 local term = require("term")
@@ -10,8 +11,10 @@ local internet = require("internet")
 local github = require("github")
 
 local options = {
-   nocache = false,
+   nocache = false, --useless
+   offline = false,
 }
+
 local wget
 local function downloadFile(url, path)
    if not wget then
@@ -85,6 +88,24 @@ local function cached(f)
    )
 end
 
+local function readall(handle, proxy)
+   local data = {}
+   local chunk
+   if proxy then
+      repeat
+         chunk = proxy.read(handle, math.huge)
+         data[#data + 1] = chunk
+      until not chunk
+      return table.concat(data, "\n")
+   end
+
+   repeat
+      chunk = handle:read(math.huge)
+      data[#data + 1] = chunk
+   until not chunk
+   return table.concat(data, "\n")
+end
+
 ---@param path string
 ---@return string
 local function readFile(path)
@@ -92,7 +113,7 @@ local function readFile(path)
    if not file then
       error("Error while trying to read file at " .. path .. ": " .. msg)
    end
-   local s = file:read("*a")
+   local s = readall(file)
    file:close()
    return s
 end
@@ -102,7 +123,7 @@ local _cache
 local function getCache()
    if not _cache then
       local path = "/etc/opdata.svd"
-      if not fs.exists(path) then
+      if not filesystem.exists(path) then
          _cache = { _repos = {} }
          return _cache
       end
@@ -122,13 +143,13 @@ local _config
 local function getConfig()
    if not _config then
       local path = "/etc/oppm.cfg"
-      if not fs.exists(path) then
+      if not filesystem.exists(path) then
          local tProcess = os.getenv("_")
          tProcess = tProcess or error("Unable to get the current process")
-         local _, locate = fs.get(tProcess)
-         path = fs.concat(locate, "/etc/oppm.cfg")
+         local _, locate = filesystem.get(tProcess)
+         path = filesystem.concat(locate, "/etc/oppm.cfg")
       end
-      if not fs.exists(path) then
+      if not filesystem.exists(path) then
          _config = { path = "/usr", repos = {} }
          return _config
       end
@@ -153,6 +174,47 @@ local function saveCache(packs)
    local sPacks = serial.serialize(packs)
    file:write(sPacks)
    file:close()
+end
+
+local function isvalidFilesystem(address)
+   local proxy = component.proxy(address) ---@cast proxy filesystem
+   return proxy.list("/")[1] == nil or proxy.exists("/programs.cfg")
+end
+
+---@return string[]
+local function getAvailableFilesystem()
+   local filesystems = {} ---@type string[]
+   local tmpfs = computer.tmpAddress()
+   for address, type in component.list("filesystem") do
+      if address ~= tmpfs then
+         if isvalidFilesystem(address) then
+            filesystems[#filesystems + 1] = address
+         end
+      end
+   end
+   return filesystems
+end
+
+---@param address string
+---@return table<string, oppm.package>?
+local function getProgramsFile(address)
+   local proxy = component.proxy(address) ---@cast proxy filesystem
+   if proxy.exists("/programs.cfg") then
+      local file = proxy.open("/programs.cfg")
+      local s = readall(file, proxy) ---@cast s string
+      proxy.close(file)
+      return unserialize(s)
+   end
+end
+
+local function saveProgramsFile(address, data)
+   local proxy = component.proxy(address) ---@cast proxy filesystem
+   local file = proxy.open("/programs.cfg", "w")
+   if not file then
+      error("Failed to open file for writing")
+   end
+   proxy.write(file, serial.serialize(data))
+   proxy.close(file)
 end
 
 local getAvailableRepos = cached(
@@ -183,9 +245,22 @@ local getAvailablePackages = cached(
 ---@param repo string
 ---@return table<string, oppm.package>?
    function(repo)
+      if options.offline then
+         local packs = {}
+         local disk = getAvailableFilesystem()
+         for _, address in ipairs(disk) do
+            local programs = getProgramsFile(address)
+            if programs then
+               for name, info in pairs(programs) do
+                  packs[name] = info
+               end
+            end
+         end
+         return packs
+      end
       local success, sPackages = pcall(getContent, "https://raw.githubusercontent.com/" .. repo .. "/master/programs.cfg")
       if not success or not sPackages or sPackages == "" then
-         io.stderr:write("Error while trying to get programs.cfg file for "..repo.."\n")
+         io.stderr:write("Error while trying to get programs.cfg file for " .. repo .. "\n")
          return
       end
       local data
@@ -201,8 +276,14 @@ local getAvailablePackages = cached(
 
 
 
+
+
 ---@param package oppt.package.handler
 local function resolveFiles(package)
+   if options.offline then
+      return package.info.files
+   end
+
    local files = {}
    ---@param path string
    ---@param target string
@@ -213,11 +294,11 @@ local function resolveFiles(package)
       local tree = repo:getTree(clearPath, true)
       if tree then
          tree:foreachFiles(function(file)
-            local fullPathUrl = fs.concat(branch, tree.path, file.path)
+            local fullPathUrl = filesystem.concat(branch, tree.path, file.path)
             files[fullPathUrl] = target
          end)
       else
-         io.stderr:write("path use " .. clearPath.."\n")
+         io.stderr:write("path use " .. clearPath .. "\n")
          error("Error while trying to get files from " .. path)
       end
    end
@@ -246,12 +327,14 @@ Package.__index = Package
 ---@param packName string
 ---@param packageInfo oppm.package
 function Package.new(repo, packName, packageInfo)
-   local owner, reponame = string.match(repo, "([^/]+)/([^/]+)")
-   if not owner and not reponame then
-      error("Invalid repository name")
+   local self = setmetatable({}, Package)
+   if not options.offline then
+      local owner, reponame = string.match(repo, "([^/]+)/([^/]+)")
+      if not owner and not reponame then
+         error("Invalid repository name")
+      end
+      self.repo = github.repo(owner, reponame)
    end
-   local self      = setmetatable({}, Package)
-   self.repo       = github.repo(owner, reponame)
    self.repoName   = repo
    self.pack       = packName
    self.info       = packageInfo
@@ -260,9 +343,30 @@ function Package.new(repo, packName, packageInfo)
    return self
 end
 
+local _packObjectCache = {}
 ---@param pack string
 ---@return oppt.package.handler?
 function Package.getPackage(pack)
+   if _packObjectCache[pack] then
+      return _packObjectCache[pack]
+   end
+   if options.offline then
+      local disk = getAvailableFilesystem()
+      for _, address in ipairs(disk) do
+         local programs = getProgramsFile(address)
+         if programs then
+            for name, info in pairs(programs) do
+               if name == pack then
+                  local p = Package.new(address, name, info)
+                  _packObjectCache[pack] = p
+                  return p
+               end
+            end
+         end
+      end
+      return nil
+   end
+
    local repos = getAvailableRepos()
    for _, j in pairs(repos) do
       if not j.repo then
@@ -274,9 +378,11 @@ function Package.getPackage(pack)
          goto continue
       end
       if type(packlist) == "table" then
-         for name, packinfo in pairs(packlist) do
+         for name, info in pairs(packlist) do
             if name == pack then
-               return Package.new(j.repo, name, packinfo)
+               local p = Package.new(j.repo, name, info)
+               _packObjectCache[pack] = p
+               return p
             end
          end
       end
@@ -284,13 +390,14 @@ function Package.getPackage(pack)
    end
    local lRepos = getConfig()
    for repo, data in pairs(lRepos.repos) do
-      for name, packinfo in pairs(data) do
+      for name, info in pairs(data) do
          if name == pack then
-            return Package.new(repo, name, packinfo)
+            local p = Package.new(repo, name, info)
+            _packObjectCache[pack] = p
+            return p
          end
       end
    end
-
    return nil
 end
 
@@ -314,11 +421,19 @@ function Package.list(installed, filter)
    end
 
    if not installed then
-      print("Receiving Package list...")
+      if options.offline then
+         local packs = getAvailablePackages("")
+         if not packs then error("Error while trying to get packages available for offline mode") end
+         for k, kt in pairs(packs) do
+            if not kt.hidden then
+               table.insert(packages, k)
+            end
+         end
+      end
+
       local repos = getAvailableRepos()
       for _, j in pairs(repos) do
          if j.repo then
-            print("Checking Repository " .. j.repo)
             local lPacks = getAvailablePackages(j.repo)
             if lPacks == nil then
                io.stderr:write("Error while trying to receive packages available for " .. j.repo .. "\n")
@@ -333,7 +448,7 @@ function Package.list(installed, filter)
       end
 
       local config = getConfig()
-      if config.repos then
+      if config.repos and not options.offline then
          for _, j in pairs(config.repos) do
             for k, kt in pairs(j) do
                if not kt.hidden then
@@ -367,12 +482,12 @@ function Package:install(dest, force)
    dest = shell.resolve(dest)
    local pack = self.pack
 
-   if fs.exists(dest) then
-      if not fs.isDirectory(dest) then
+   if filesystem.exists(dest) then
+      if not filesystem.isDirectory(dest) then
          return false, "Path points to a file, needs to be a directory."
       end
    elseif force then
-      fs.makeDirectory(dest)
+      filesystem.makeDirectory(dest)
    else
       return false, "Destination does not exist."
    end
@@ -382,38 +497,59 @@ function Package:install(dest, force)
    end
 
    cache[pack] = {}
-   --term.write("Installing Files...")
    for file, target in pairs(self.files) do
       local localPath
       local branch, repoPath = string.match(file, "^%??(.-)/(.+)")
-      if string.find(target, "^//") then
+      if string.find(target, "^//") then -- absolute path
          local lPath = string.sub(target, 2)
-         if not fs.exists(lPath) then
-            fs.makeDirectory(lPath)
+         if not filesystem.exists(lPath) then
+            filesystem.makeDirectory(lPath)
          end
-         localPath = fs.concat(lPath, gsub(repoPath, ".+(/.-)$", "%1"))
+         localPath = filesystem.concat(lPath, gsub(repoPath, ".+(/.-)$", "%1"))
       else
-         local lPath = fs.concat(dest, target)
-         if not fs.exists(lPath) then
-            fs.makeDirectory(lPath)
+         local lPath = filesystem.concat(dest, target) -- relative path
+         if not filesystem.exists(lPath) then
+            filesystem.makeDirectory(lPath)
          end
-         print("target: " .. target)
-         print("lPath: " .. lPath)
-         localPath = fs.concat(lPath, gsub(repoPath, ".+(/.-)$", "%1"))
+         localPath = filesystem.concat(lPath, gsub(repoPath, ".+(/.-)$", "%1"))
       end
 
-      local soft = string.find(file, "^%?") and fs.exists(localPath) and not force
+      local soft = string.find(file, "^%?") and filesystem.exists(localPath) and not force
       if soft then
          goto continue
       end
-      self.repo:changeBranch(branch)
-      local success, msg = self.repo:downloadFile(repoPath, localPath)
+      local success, msg
+      if options.offline then
+         local function copy(address, from, to)
+            local proxy = component.proxy(address) ---@cast proxy filesystem
+            local data
+            local input, reason = proxy.open(from, "rb")
+            if input then
+               local output = filesystem.open(to, "wb")
+               if output then
+                  repeat
+                     data, reason = proxy.read(input, 1024)
+                     if not data then break end
+                     data, reason = output:write(data)
+                     if not data then data, reason = false, "failed to write" end
+                  until not data
+                  output:close()
+               end
+               proxy.close(input)
+            end
+            return data == nil, reason
+         end
+         success, msg = copy(self.repoName, filesystem.concat(branch, repoPath), localPath)
+      else
+         self.repo:changeBranch(branch)
+         success, msg = self.repo:downloadFile(repoPath, localPath)
+      end
       if not success then
          term.write("Error while installing files for package '" .. pack .. "': " ..
             msg .. ".\nReverting installation...\n")
-         fs.remove(localPath)
+         filesystem.remove(localPath)
          for o, p in pairs(cache[pack]) do
-            fs.remove(p)
+            filesystem.remove(p)
             cache[pack][o] = nil
          end
          cache[pack] = nil
@@ -430,12 +566,12 @@ function Package:install(dest, force)
          if string.find(target, "^//") then
             localPath = string.sub(target, 2)
          else
-            localPath = fs.concat(dest, target)
+            localPath = filesystem.concat(dest, target)
          end
          if string.lower(string.sub(dep, 1, 4)) == "http" then
-            localPath = fs.concat(localPath, gsub(dep, ".+(/.-)$", "%1"), nil)
-            if not fs.exists(fs.path(localPath)) then
-               fs.makeDirectory(fs.path(localPath))
+            localPath = filesystem.concat(localPath, gsub(dep, ".+(/.-)$", "%1"), nil)
+            if not filesystem.exists(filesystem.path(localPath)) then
+               filesystem.makeDirectory(filesystem.path(localPath))
             end
             local success, response = pcall(downloadFile, dep, localPath)
             if success and response then
@@ -445,9 +581,9 @@ function Package:install(dest, force)
                response = response or "no error message"
                term.write("Error while installing files for package '" ..
                   dep .. "': " .. response .. ". Reverting installation... ")
-               fs.remove(localPath)
+               filesystem.remove(localPath)
                for o, p in pairs(cache[dep]) do
-                  fs.remove(p)
+                  filesystem.remove(p)
                   cache[dep][o] = nil
                end
                print("Done.\nPlease contact the package author about this problem.")
@@ -466,6 +602,70 @@ function Package:install(dest, force)
    return true
 end
 
+---@param address string
+---@return boolean success
+---@return string? msg
+function Package:addToDisk(address)
+   local fs = component.proxy(address)
+   if fs.type ~= "filesystem" or not isvalidFilesystem(address) then
+      return false, "Invalid filesystem"
+   end
+   ---@cast fs filesystem
+   local programs
+   if fs.exists("/programs.cfg") then
+      programs = getProgramsFile(address)
+      if not programs then
+         error("Error while trying to get programs.cfg file of " .. fs.address)
+      end
+   else
+      programs = {}
+   end
+   if programs[self.pack] then
+      return false, "Package already exists on disk"
+   end
+   programs[self.pack] = self.info
+   programs[self.pack].files = self.files
+   saveProgramsFile(address, programs)
+   local disk = filesystem.concat("/mnt/" .. fs.address:sub(1, 3), self.pack)
+   if filesystem.exists(disk) then
+      return false, "directory already exists"
+   end
+   for file, _ in pairs(self.files) do
+      local branch, repoPath = string.match(file, "^%??(.-)/(.+)")
+      local target = filesystem.concat(disk, branch, repoPath)
+      if not filesystem.exists(filesystem.path(target)) then
+         filesystem.makeDirectory(filesystem.path(target))
+      end
+      self.repo:changeBranch(branch)
+      local success, msg = self.repo:downloadFile(repoPath, target)
+   end
+   return true
+end
+
+---@param address string
+---@return boolean success
+---@return string? msg
+function Package:removeToDisk(address)
+   local fs = component.proxy(address)
+   if fs.type ~= "filesystem" and isvalidFilesystem(address) then
+      return false, "Invalid filesystem"
+   end
+   ---@cast fs filesystem
+   local programs
+   if not fs.exists("/programs.cfg") then
+      return false, "No programs.cfg file found on disk"
+   end
+   programs = getProgramsFile(address)
+   if not programs[self.pack] then
+      return false, "Package does not exist on disk"
+   end
+   programs[self.pack] = nil
+   saveProgramsFile(address, programs)
+   local packLocate = filesystem.concat("/mnt/" .. fs.address:sub(1, 3), self.pack)
+   filesystem.remove(packLocate)
+   return true
+end
+
 ---@param pack string
 ---@param removeAll boolean? @also remove config files
 ---@return boolean success
@@ -480,7 +680,7 @@ function Package.uninstall(pack, removeAll)
    end
    for url, localPath in pairs(cache[pack]) do
       if not string.find(url, "^%?") or removeAll then
-         fs.remove(localPath)
+         filesystem.remove(localPath)
       end
    end
    cache[pack] = nil
@@ -504,7 +704,7 @@ function Package.update(pack)
    for url, target in pairs(packObj.files) do
       if not string.find(target, "^//") then
          if cache[pack][url] then
-            dest = gsub(fs.path(cache[pack][url]), target .. ".*$", "/")
+            dest = gsub(filesystem.path(cache[pack][url]), target .. ".*$", "/")
             break
          end
       end
@@ -585,4 +785,5 @@ return {
    getPackage = Package.getPackage,
    registerRepo = registerRepo,
    unregisterRepo = unregisterRepo,
+   options = options,
 }
