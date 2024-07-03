@@ -136,7 +136,7 @@ function text.unicodeFind(s, pattern, init, plain)
 		end
 	end
 	
-	a, b = s:find(pattern, init, plain)
+	local a, b = s:find(pattern, init, plain)
 	
 	if a then
 		local ap, bp = s:sub(1, a - 1), s:sub(a,b)

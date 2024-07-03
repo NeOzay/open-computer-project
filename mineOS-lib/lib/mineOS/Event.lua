@@ -61,6 +61,7 @@ function event.pull(preferredTimeout)
 	local uptime, signalData = computerUptime()
 	local deadline = uptime + (preferredTimeout or mathHuge)
 	interruptingKeysDown = {}
+	local timeout
 	repeat
 		-- Determining pullSignal timeout
 		timeout = deadline
