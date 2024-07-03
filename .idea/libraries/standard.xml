@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="standard" type="Lua">
-    <CLASSES>
-      <root url="file://$PROJECT_DIR$/../Open Computer documentation/standard" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

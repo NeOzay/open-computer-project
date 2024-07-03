@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="63edec18-2239-49dd-9176-12cf57ddf6a4" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/filehandle.lua" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/codeStyles/codeStyleConfig.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/standard.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/runConfigurations.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.vscode/settings.json" beforeDir="false" afterPath="$PROJECT_DIR$/.vscode/settings.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GTNH-CropAutomation/etc/autocrop/conf.lua" beforeDir="false" afterPath="$PROJECT_DIR$/GTNH-CropAutomation/etc/autocrop/conf.lua" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GTNH-CropAutomation/lib/autocrop/manager.lua" beforeDir="false" afterPath="$PROJECT_DIR$/GTNH-CropAutomation/lib/autocrop/manager.lua" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GTNH-CropAutomation/lib/autocrop/plot.lua" beforeDir="false" afterPath="$PROJECT_DIR$/GTNH-CropAutomation/lib/autocrop/plot.lua" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GTNH-CropAutomation/lib/autocrop/scanner.lua" beforeDir="false" afterPath="$PROJECT_DIR$/GTNH-CropAutomation/lib/autocrop/scanner.lua" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/standard/components/GPU.lua" beforeDir="false" afterPath="$PROJECT_DIR$/doc/standard/components/GPU.lua" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/standard/components/transposer.lua" beforeDir="false" afterPath="$PROJECT_DIR$/doc/standard/components/transposer.lua" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/standard/lib/component.lua" beforeDir="false" afterPath="$PROJECT_DIR$/doc/standard/lib/component.lua" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/standard/lib/computer.lua" beforeDir="false" afterPath="$PROJECT_DIR$/doc/standard/lib/computer.lua" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/standard/lib/filesystem.lua" beforeDir="false" afterPath="$PROJECT_DIR$/doc/standard/lib/filesystem.lua" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/standard/lib/term.lua" beforeDir="false" afterPath="$PROJECT_DIR$/doc/standard/lib/term.lua" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mineOS-lib/lib/mineOS/Filesystem.lua" beforeDir="false" afterPath="$PROJECT_DIR$/mineOS-lib/lib/mineOS/Filesystem.lua" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nuke-manager/bin/nuke_manager.lua" beforeDir="false" afterPath="$PROJECT_DIR$/nuke-manager/bin/nuke_manager.lua" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nuke-manager/bin/nuke_manager_config.lua" beforeDir="false" afterPath="$PROJECT_DIR$/nuke-manager/bin/nuke_manager_config.lua" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nuke-manager/lib/nuke_manager/config_utils.lua" beforeDir="false" afterPath="$PROJECT_DIR$/nuke-manager/lib/nuke_manager/config_utils.lua" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nuke-manager/lib/nuke_manager/logging.lua" beforeDir="false" afterPath="$PROJECT_DIR$/nuke-manager/lib/nuke_manager/logging.lua" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nuke-manager/lib/nuke_manager/utils.lua" beforeDir="false" afterPath="$PROJECT_DIR$/nuke-manager/lib/nuke_manager/utils.lua" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ocpt/bin/ocpt.lua" beforeDir="false" afterPath="$PROJECT_DIR$/ocpt/bin/ocpt.lua" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ocpt/lib/ocpt.lua" beforeDir="false" afterPath="$PROJECT_DIR$/ocpt/lib/ocpt.lua" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test.lua" beforeDir="false" afterPath="$PROJECT_DIR$/test.lua" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="ROOT_SYNC" value="SYNC" />
+  </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/crash.lua" root0="FORCE_HIGHLIGHTING" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 6
+}</component>
+  <component name="ProjectId" id="2ijuLH2n0cxcWAAQqDHhaPDIrCy" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "ShowUsagesActions.previewPropertyKey": "true",
+    "git-widget-placeholder": "master",
+    "ignore.virus.scanning.warn.message": "true",
+    "kotlin-language-version-configured": "true",
+    "settings.editor.selected.configurable": "reference.settingsdialog.IDE.editor.colors.Language Server"
+  }
+}]]></component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="63edec18-2239-49dd-9176-12cf57ddf6a4" name="Changes" comment="" />
+      <created>1720016249924</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1720016249924</updated>
+    </task>
+    <servers />
+  </component>
+</project>
