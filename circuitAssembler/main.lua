@@ -22,7 +22,7 @@ local function selectRecipe()
 		table.insert(list, recipe)
 	end
 	print(text)
-	---@type number
+	---@type number?
 	local selection
 	while type(selection) ~= "number" do
 		selection = tonumber(io.read())
@@ -75,7 +75,7 @@ local function transferToAssembler(fromSlot, pushin, amount)
 end
 
 local function selectAmount()
-	local amount ---@type number
+	local amount ---@type number?
 	print("amount(number)")
 	while type(amount) ~= "number" do
 		amount = tonumber(io.read())

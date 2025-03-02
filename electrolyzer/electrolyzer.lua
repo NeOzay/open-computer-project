@@ -46,9 +46,6 @@ Electrolyzer.__index = Electrolyzer
 ---@param side number
 ---@return GTelectrolyzer
 function Electrolyzer.new(side)
-    local o = {}
-    o.side = side
-    o.cooldown = 0
     return setmetatable({
 		side = side,
 		cooldown = 0
@@ -87,8 +84,8 @@ end
 print("init end")
 
 local sleep = 0
+local newSleep = 100
 while true do
-    local newSleep = 100
     for _, electrolyzer in ipairs(electrolyzerList) do
         local duration = electrolyzer:decreaseCooldown(sleep)
         if duration == 0 then electrolyzer:insertDust(drawer:getDust()) end
@@ -97,5 +94,6 @@ while true do
     print("sleep " .. newSleep .. "s")
     os.sleep(newSleep)
     sleep = newSleep
+    newSleep = 100
 end
 

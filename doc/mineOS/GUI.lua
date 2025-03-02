@@ -1,26 +1,39 @@
----@meta mineOS.GUI
+---@meta _
 
 ---@class mineOS.GUI
-local GUI = {
-	ALIGNMENT_HORIZONTAL_LEFT = 1,
-	ALIGNMENT_HORIZONTAL_CENTER = 2,
-	ALIGNMENT_HORIZONTAL_RIGHT = 3,
-	ALIGNMENT_VERTICAL_TOP = 4,
-	ALIGNMENT_VERTICAL_CENTER = 5,
-	ALIGNMENT_VERTICAL_BOTTOM = 6,
-}
+local GUI = {}
 
----@alias Horizontal_alignment 
+---@alias GUI.Horizontal_alignment 
 ---|`GUI.ALIGNMENT_HORIZONTAL_LEFT`
 ---|`GUI.ALIGNMENT_HORIZONTAL_CENTER`
 ---|`GUI.ALIGNMENT_HORIZONTAL_RIGHT`
 
----@alias Vertical_alignment
+---@alias GUI.Vertical_alignment
 ---|`GUI.ALIGNMENT_VERTICAL_TOP`
 ---|`GUI.ALIGNMENT_VERTICAL_CENTER`
 ---|`GUI.ALIGNMENT_VERTICAL_BOTTOM`
 
+---@alias GUI.Direction
+---|`GUI.DIRECTION_HORIZONTAL` 
+---|`GUI.DIRECTION_VERTICAL`
+
+---@alias GUI.SIZE_POLICY
+---|`GUI.SIZE_POLICY_ABSOLUTE`
+---|`GUI.SIZE_POLICY_RELATIVE`
+
+---@alias GUI.IO_Mode
+---|`GUI.IO_MODE_SAVE`
+---|`GUI.IO_MODE_FILE`
+---|`GUI.IO_MODE_DIRECTORY`
+
 ---@class GUI.object
+---@field horizontalAlignment GUI.Horizontal_alignment
+---@field verticalAlignment GUI.Vertical_alignment
+---@field ignoresCapturedObject boolean
+---@field parent GUI.container
+---@field layoutRow? number
+---@field layoutColumn? number
+---@field eventHandler fun(workspace:GUI.workspace, object:GUI.object, e1:string, ...)
 local object = {}
 
 ---Creates a new GUI object.
@@ -59,11 +72,70 @@ object.disabled = nil
 ---Whether screen events like touch/drag should be blocked or pass through object to deeper levels of the hierarchy.
 ---@type boolean
 object.blockScreenEvents = true
+---Reference to current workspace which has the topmost position in the hierarchy of objects tree.
+---@type GUI.workspace
+object.workspace = nil
+
+---Reference to the parent container of the object.
+---@type GUI.container
+object.parent = nil
+
+---Local position on the x-axis in the parent container.
+---@type number
+object.localX = nil
+
+---Local position on the y-axis in the parent container.
+---@type number
+object.localY = nil
+
+---Get the index of this object in the parent container (iterative method).
+---@return number
+function object:indexOf()
+end
+
+---Move the object "back" in the container children hierarchy.
+---@return nil
+function object:moveForward()
+end
+
+---Move the object "forward" in the container children hierarchy.
+---@return nil
+function object:moveBackward()
+end
+
+---Move the object to the end of the container children hierarchy.
+---@return nil
+function object:moveToFront()
+end
+
+---Move the object to the beginning of the container children hierarchy.
+---@return nil
+function object:moveToBack()
+end
+
+---Remove this object from the parent container. Roughly speaking, this is a convenient way of self-destruction.
+---@return nil
+function object:remove()
+end
+
+---Add an animation to this object.
+---@param frameHandler fun(animation:GUI.animation) The function to handle each frame of the animation
+---@param onFinish fun(animation:GUI.animation) The function to call when the animation finishes
+---@return GUI.animation
+function object:addAnimation(frameHandler, onFinish)
+end
 
 ---Main method that is called to render this object to the screen buffer. It can be defined by the user in any convenient way.
----@return nil
-function object:draw()
+---@generic K
+---@param object K
+---@return K
+function object.draw(object)
 end
+
+---@param workspace GUI.workspace
+---@param object GUI.object
+---@param ... unknown
+function object.eventHandler(workspace, object, ...) end
 
 -------------------------------------------------------------------------------------------------------------------------
 
@@ -79,76 +151,11 @@ local container = {}
 function GUI.container(x, y, width, height)
 end
 
----Reference to current workspace which has the topmost position in the hierarchy of objects tree.
----@type table
-container.workspace = nil
-
----Reference to the parent container of the object.
----@type table
-container.parent = nil
-
----Local position on the x-axis in the parent container.
----@type number
-container.localX = nil
-
----Local position on the y-axis in the parent container.
----@type number
-container.localY = nil
-
----Get the index of this object in the parent container (iterative method).
----@return number
-function container:indexOf()
-end
-
----Move the object "back" in the container children hierarchy.
----@return nil
-function container:moveForward()
-end
-
----Move the object "forward" in the container children hierarchy.
----@return nil
-function container:moveBackward()
-end
-
----Move the object to the end of the container children hierarchy.
----@return nil
-function container:moveToFront()
-end
-
----Move the object to the beginning of the container children hierarchy.
----@return nil
-function container:moveToBack()
-end
-
----Remove this object from the parent container. Roughly speaking, this is a convenient way of self-destruction.
----@return nil
-function container:remove()
-end
-
----Add an animation to this object.
----@param frameHandler function The function to handle each frame of the animation
----@param onFinish function The function to call when the animation finishes
----@return table animation
-function container:addAnimation(frameHandler, onFinish)
-end
-
----An optional method for handling system events, called by the parent container handler.
----@param workspace table The container's workspace
----@param object table The object under consideration
----@vararg ... eventData
-function container.eventHandler(workspace, object, ...)
-end
-
 ---Table that contains all child objects of this container.
----@type table
+---@type GUI.object[]
 container.children = {}
 
----Add specified object to the container as a child.
----@param child table The object to add as a child
----@param atIndex? number The index at which to add the child in the container's children table
----@return table The added child object
-function container:addChild(child, atIndex)
-end
+
 
 ---Remove all child elements of the container.
 ---@param fromIndex? number The starting index from which to remove child elements (optional)
@@ -159,7 +166,7 @@ end
 
 -------------------------------------------------------------------------------------------------------------------------
 
----@class GUI.workspace : GUI.container
+--[[---@class GUI.workspace : GUI.container
 local workspace = {}
 
 ---Creates a new workspace, which is a full screen container that can handle computer events.
@@ -194,80 +201,58 @@ end
 ---@param force? boolean Optional argument to force drawing all pixels, not just changed ones
 ---@return nil
 function workspace:draw(force)
-end
+end]]
 
 -------------------------------------------------------------------------------------------------------------------------
 
----@class GUI.animation
-local animation = {}
+---@class GUI.panel : GUI.object
+local panel = {}
 
----A pointer to the widget which contains this animation.
----@type table
-animation.object = nil
-
----Current animation playback position. It is always in [0.0; 1.0] range, where 0.0 is animation starting and 1.0 is animation ending.
----@type number
-animation.position = nil
-
----Start animation playback. During animation playback, the workspace handling events will temporarily handle events with maximum available speed.
----@return nil
-function animation:start()
+---Creates a new panel object.
+---@param x number Panel coordinate by x-axis
+---@param y number Panel coordinate by y-axis
+---@param width number Panel width
+---@param height number Panel height
+---@param color number Panel color
+---@param transparency? number Optional transparency of the panel
+---@return GUI.panel
+function GUI.panel(x, y, width, height, color, transparency)
 end
 
----Stop animation playback.
----@return nil
-function animation:stop()
-end
+---Panel coordinate by x-axis.
+---@type integer
+panel.x = 0
 
----Remove animation from its widget.
----@return nil
-function animation:remove()
-end
+---Panel coordinate by y-axis.
+---@type integer
+panel.y = 0
 
----An animation frame handler. It is called every frame before drawing stuff to the screen buffer.
----@param animation table A pointer to the animation object
----@return nil
-function animation.frameHandler(animation)
-end
+---Panel width.
+---@type integer
+panel.width = 0
 
----This function is called after finishing animation playback.
----@return nil
-function animation.onFinish()
-end
+---Panel height.
+---@type integer
+panel.height = 0
 
--------------------------------------------------------------------------------------------------------------------------
+---Panel color.
+---@type integer
+panel.color = 0
 
----@class GUI.text : GUI.object
-local text = {}
-
----Creates a new text object.
----@param x number Object coordinate by x-axis
----@param y number Object coordinate by y-axis
----@param textColor number Object text color
----@param text string Object text
----@return GUI.text
-function GUI.text(x, y, textColor, text)
-end
+---Optional transparency of the panel.
+---@type integer
+panel.transparency = 0
 
 -------------------------------------------------------------------------------------------------------------------------
 
 ---@class GUI.label : GUI.object
 local label = {}
 
----Creates a new label object.
----@param x number Object coordinate by x-axis
----@param y number Object coordinate by y-axis
----@param width number Object width
----@param height number Object height
----@param textColor number Object text color
----@param text string Object text
----@return GUI.label
-function GUI.label(x, y, width, height, textColor, text)
-end
+
 
 ---Choose a text display option for label boundaries.
----@param horizontalAlignment Horizontal_alignment Horizontal alignment option
----@param verticalAlignment Vertical_alignment Vertical alignment option
+---@param horizontalAlignment GUI.Horizontal_alignment Horizontal alignment option
+---@param verticalAlignment GUI.Vertical_alignment Vertical alignment option
 ---@return GUI.label
 function label:setAlignment(horizontalAlignment, verticalAlignment)
 end
@@ -291,7 +276,7 @@ image.image = {}
 
 -------------------------------------------------------------------------------------------------------------------------
 
----@class GUI.button : GUI.object
+---@class GUI.button : GUI.pressable
 local button = {}
 
 ---Creates a new button object.
@@ -392,6 +377,8 @@ end
 function GUI.roundedButton(x, y, width, height, buttonColor, textColor, buttonPressedColor, textPressedColor, text)
 end
 
+button.animationStarted = true
+
 ---This property allows the user to understand whether the button is pressed or not.
 ---@type boolean
 button.pressed = false
@@ -409,8 +396,10 @@ button.animated = true
 button.animationDuration = 0.2
 
 ---If this method exists, it is called after clicking on the button.
----@return nil
-function button:onTouch()
+---@param workspace GUI.workspace
+---@param button GUI.button
+---@param ... any
+function button.onTouch(workspace, button, ...)
 end
 
 -------------------------------------------------------------------------------------------------------------------------
@@ -440,152 +429,116 @@ actionButtons.maximize = {}
 
 -------------------------------------------------------------------------------------------------------------------------
 
----@class GUI.input : GUI.object
-local input = {}
+---@class GUI.list : GUI.layout
+local list = {}
 
----Creates a new input object.
+---Creates a new list object.
 ---@param x number Object coordinate by x-axis
 ---@param y number Object coordinate by y-axis
 ---@param width number Object width
 ---@param height number Object height
----@param backgroundColor number Object default background color
----@param textColor number Object default text color
----@param placeholderTextColor number Object placeholder color
----@param backgroundFocusedColor number Object focused background color
----@param textFocusedColor number Object focused text color
----@param text string Object text value
----@param placeholderText string Text to be displayed, provided that the entered text is empty
----@param eraseTextOnFocus boolean Erase text when the input is focused
----@param textMask string A mask character for the text to be entered. Convenient for creating a password entry field
----@return GUI.input
-function GUI.input(x, y, width, height, backgroundColor, textColor, placeholderTextColor, backgroundFocusedColor,textFocusedColor, text, placeholderText, eraseTextOnFocus, textMask)
+---@param itemSize number Item size by selected direction
+---@param spacing number Space between items
+---@param backgroundColor number Object background color
+---@param textColor number Object text color
+---@param alternateBackgroundColor number Object alternate background color
+---@param alternateTextColor number Object alternate text color
+---@param backgroundSelectedColor number Object selection background color
+---@param textSelectedColor number Object selection text color
+---@param offsetMode? boolean Optional mode, in which the items size are created based on the pixel offset from their texts
+---@return GUI.list
+function GUI.list(x, y, width, height, itemSize, spacing, backgroundColor, textColor, alternateBackgroundColor, alternateTextColor, backgroundSelectedColor, textSelectedColor, offsetMode)
 end
 
----A variable that contains current displayed text of an object.
----@type string
-input.text = ""
+---Index of currently selected item.
+---@type integer
+list.selectedItem = 0
 
----Optional property that allows widget to remember text that user inputs and to navigate through its history via arrows buttons. Set to false by default.
----@type boolean
-input.historyEnabled = false
-
----Method for activation of text inputting.
----@return nil
-function input:startInput()
+---Add new item to object. You can specify .onTouch() function if desired.
+---@param text string The text of the item
+---@return GUI.button
+function list:addItem(text)
 end
 
----The function that is called after the text is entered in the input field. If it returns true, the text in the text field will be changed to the entered text, otherwise the entered data will be ignored.
----@param text string The entered text
----@return boolean Whether the text is valid
-function input.validator(text)
+---Get item by its index.
+---@param index integer The index of the item
+---@return table item
+function list:getItem(index)
 end
 
----The function that is called after entering data in the input field: it's a handy thing if you want to do something after entering text. If the object has .validator function, and if the text does not pass the check through it, then .onInputFinished will not be called.
----@return nil
-function input.onInputFinished()
+---Set list items alignment. By default, it's set to GUI.ALIGNMENT_HORIZONTAL_LEFT and GUI.ALIGNMENT_VERTICAL_TOP.
+---@param horizontalAlignment GUI.Horizontal_alignment The horizontal alignment
+---@param verticalAlignment GUI.Vertical_alignment The vertical alignment
+---@return GUI.list
+function list:setAlignment(horizontalAlignment, verticalAlignment)
 end
 
--------------------------------------------------------------------------------------------------------------------------
-
----@class GUI.slider : GUI.object
-local slider = {}
-
----Creates a new slider object.
----@param x number Object coordinate by x-axis
----@param y number Object coordinate by y-axis
----@param width number Object width
----@param primaryColor number Object primary color
----@param secondaryColor number Object secondary color
----@param pipeColor number Object "pipe" color
----@param valueColor number Object text value color
----@param minimumValue number Object minimum value
----@param maximumValue number Object maximum value
----@param value number Object current value
----@param showCornerValues? boolean Do min/max values are needed to be shown at slider's corners
----@param currentValuePrefix? string Prefix for value displaying
----@param currentValuePostfix? string Postfix for value displaying
----@return GUI.slider
-function GUI.slider(x, y, width, primaryColor, secondaryColor, pipeColor, valueColor, minimumValue, maximumValue, value, showCornerValues, currentValuePrefix, currentValuePostfix)
+---Choose an items display option for List boundaries. The default alignment is left and top.
+---@param direction number The direction
+---@return GUI.list
+function list:setDirection(direction)
 end
 
----Current slider value variable.
----@type number
-slider.value = 0.0
-
----This property will visually round slider values.
----@type boolean
-slider.roundValues = false
-
----This function will be called after slider value changing.
----@return nil
-function slider.onValueChanged()
+---Set spacing between List items.
+---@param spacing number The spacing
+---@return GUI.list
+function list:setSpacing(spacing)
 end
 
----Determines how big part of content must be scrolled using mouse wheel. Note that property works as percentage, not pixels. The default value is 0.05.
----@type number
-slider.scrollSensitivity = 0.05
+---Set margin in pixels depending on the current alignment of List.
+---@param horizontalMargin number The horizontal margin
+---@param verticalMargin number The vertical margin
+---@return GUI.list
+function list:setMargin(horizontalMargin, verticalMargin)
+end
 
----This function will be called after value changing by mouse wheel.
----@return nil
-function slider.onScroll()
+---Get current margins in pixels of List.
+---@return integer row, integer horizontalMargin, integer verticalMargin
+function list:getMargin()
 end
 
 -------------------------------------------------------------------------------------------------------------------------
 
----@class GUI.switch : GUI.object
-local switch = {}
+---@class GUI.contextMenu
+local contextMenu = {}
 
----Creates a new switch object.
----@param x number Object coordinate by x-axis
----@param y number Object coordinate by y-axis
----@param width number Object width
----@param primaryColor number Object primary color
----@param secondaryColor number Object secondary color
----@param pipeColor number Object "pipe" color
----@param state boolean Object state
----@return GUI.switch
-function GUI.switch(x, y, width, primaryColor, secondaryColor, pipeColor, state)
+---Adds a new item to the context menu.
+---@param text string Item text
+---@param disabled boolean If true, the item will not react to mouse clicking
+---@param shortcut string Optional shortcut text
+---@param color number Optional item color
+---@return table item
+function contextMenu:addItem(text, disabled, shortcut, color)
 end
 
----Current switch state variable.
----@type boolean
-switch.state = false
-
----Change switch state to specified one.
----@param state boolean The desired state of the switch
----@return nil
-function switch:setState(state)
+---Adds a separator to the context menu.
+function contextMenu:addSeparator()
 end
 
----This function will be called when switch state is changed.
----@return nil
-function switch.onStateChanged()
+---Removes an item from the context menu by its index.
+---@param index number Item index
+---@return table item
+function contextMenu:removeItem(index)
+end
+
+---Adds a submenu item to the context menu.
+---@param text string Item text
+---@param disabled boolean If true, the submenu item will not react to mouse clicking
+---@return table contextMenu
+function contextMenu:addSubMenuItem(text, disabled)
+end
+
+---Called after the user selects a menu item or closes the context menu.
+---@param selectedIndex number Index of the selected item
+function contextMenu.onMenuClosed(selectedIndex)
 end
 
 -------------------------------------------------------------------------------------------------------------------------
 
----@class GUI.switchAndLabel : GUI.container
-switchAndLabel = {}
-
----Creates a new switch and label container.
----@param x number Object coordinate by x-axis
----@param y number Object coordinate by y-axis
----@param width number Total width
----@param switchWidth number Switch width
----@param primaryColor number Switch primary color
----@param secondaryColor number Switch secondary color
----@param pipeColor number Switch "pipe" color
----@param textColor number Label text color
----@param text string Label text
----@param switchState boolean Switch state
----@return GUI.switchAndLabel
-function GUI.switchAndLabel(x, y, width, switchWidth, primaryColor, secondaryColor, pipeColor, textColor, text, switchState)
+---@param ... unknown
+function GUI.alert(...)
 end
 
----Pointer to switch child object.
----@type table
-switchAndLabel.switch = {}
+-------------------------------------------------------------------------------------------------------------------------
 
----Pointer to label child object.
----@type table
-switchAndLabel.label = {}
+return GUI

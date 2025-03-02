@@ -5,35 +5,222 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="63edec18-2239-49dd-9176-12cf57ddf6a4" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/filehandle.lua" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/codeStyles/codeStyleConfig.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/standard.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/runConfigurations.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.vscode/settings.json" beforeDir="false" afterPath="$PROJECT_DIR$/.vscode/settings.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/GTNH-CropAutomation/etc/autocrop/conf.lua" beforeDir="false" afterPath="$PROJECT_DIR$/GTNH-CropAutomation/etc/autocrop/conf.lua" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/GTNH-CropAutomation/lib/autocrop/manager.lua" beforeDir="false" afterPath="$PROJECT_DIR$/GTNH-CropAutomation/lib/autocrop/manager.lua" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/GTNH-CropAutomation/lib/autocrop/plot.lua" beforeDir="false" afterPath="$PROJECT_DIR$/GTNH-CropAutomation/lib/autocrop/plot.lua" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/GTNH-CropAutomation/lib/autocrop/scanner.lua" beforeDir="false" afterPath="$PROJECT_DIR$/GTNH-CropAutomation/lib/autocrop/scanner.lua" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/doc/standard/components/GPU.lua" beforeDir="false" afterPath="$PROJECT_DIR$/doc/standard/components/GPU.lua" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/doc/standard/components/transposer.lua" beforeDir="false" afterPath="$PROJECT_DIR$/doc/standard/components/transposer.lua" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/doc/standard/lib/component.lua" beforeDir="false" afterPath="$PROJECT_DIR$/doc/standard/lib/component.lua" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/doc/standard/lib/computer.lua" beforeDir="false" afterPath="$PROJECT_DIR$/doc/standard/lib/computer.lua" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/doc/standard/lib/filesystem.lua" beforeDir="false" afterPath="$PROJECT_DIR$/doc/standard/lib/filesystem.lua" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/doc/standard/lib/term.lua" beforeDir="false" afterPath="$PROJECT_DIR$/doc/standard/lib/term.lua" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mineOS-lib/lib/mineOS/Filesystem.lua" beforeDir="false" afterPath="$PROJECT_DIR$/mineOS-lib/lib/mineOS/Filesystem.lua" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/mineOS/GUI.lua" beforeDir="false" afterPath="$PROJECT_DIR$/doc/mineOS/GUI.lua" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/nuke_manager.def.lua" beforeDir="false" afterPath="$PROJECT_DIR$/doc/nuke_manager.def.lua" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/.prop" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/bin/address.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/bin/alias.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/bin/cat.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/bin/cd.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/bin/clear.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/bin/components.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/bin/cp.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/bin/date.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/bin/df.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/bin/dmesg.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/bin/du.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/bin/echo.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/bin/edit.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/bin/find.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/bin/flash.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/bin/free.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/bin/grep.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/bin/head.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/bin/hostname.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/bin/install.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/bin/label.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/bin/less.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/bin/list.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/bin/ln.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/bin/ls.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/bin/lshw.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/bin/lua.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/bin/man.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/bin/mkdir.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/bin/mktmp.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/bin/mount.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/bin/mv.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/bin/pastebin.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/bin/primary.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/bin/ps.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/bin/pwd.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/bin/rc.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/bin/reboot.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/bin/redstone.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/bin/resolution.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/bin/rm.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/bin/rmdir.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/bin/set.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/bin/sh.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/bin/shutdown.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/bin/sleep.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/bin/source.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/bin/time.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/bin/touch.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/bin/tree.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/bin/umount.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/bin/unalias.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/bin/unset.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/bin/uptime.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/bin/useradd.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/bin/userdel.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/bin/wget.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/bin/which.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/bin/yes.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/boot/00_base.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/boot/01_process.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/boot/02_os.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/boot/03_io.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/boot/04_component.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/boot/10_devfs.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/boot/89_rc.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/boot/90_filesystem.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/boot/91_gpu.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/boot/92_keyboard.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/boot/93_term.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/boot/94_shell.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/etc/motd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/etc/profile.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/etc/rc.cfg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/etc/rc.d/example.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/home/.shrc" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/init.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/lib/bit32.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/lib/buffer.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/lib/colors.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/lib/core/boot.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/lib/core/cursor.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/lib/core/devfs/01_hw.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/lib/core/devfs/02_utils.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/lib/core/devfs/adapters/computer.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/lib/core/devfs/adapters/eeprom.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/lib/core/devfs/adapters/filesystem.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/lib/core/devfs/adapters/gpu.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/lib/core/devfs/adapters/internet.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/lib/core/devfs/adapters/modem.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/lib/core/devfs/adapters/screen.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/lib/core/device_labeling.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/lib/core/full_buffer.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/lib/core/full_cursor.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/lib/core/full_event.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/lib/core/full_filesystem.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/lib/core/full_keyboard.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/lib/core/full_ls.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/lib/core/full_sh.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/lib/core/full_shell.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/lib/core/full_text.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/lib/core/full_transforms.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/lib/core/full_vt.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/lib/core/install_basics.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/lib/core/install_utils.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/lib/core/lua_shell.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/lib/devfs.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/lib/event.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/lib/filesystem.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/lib/internet.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/lib/io.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/lib/keyboard.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/lib/note.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/lib/package.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/lib/pipe.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/lib/process.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/lib/rc.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/lib/serialization.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/lib/sh.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/lib/shell.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/lib/sides.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/lib/term.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/lib/text.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/lib/thread.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/lib/tools/programLocations.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/lib/tools/transfer.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/lib/transforms.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/lib/tty.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/lib/uuid.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/lib/vt100.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/usr/man/address" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/usr/man/alias" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/usr/man/cat" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/usr/man/cd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/usr/man/clear" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/usr/man/cp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/usr/man/date" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/usr/man/df" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/usr/man/dmesg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/usr/man/echo" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/usr/man/edit" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/usr/man/grep" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/usr/man/head" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/usr/man/hostname" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/usr/man/install" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/usr/man/label" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/usr/man/less" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/usr/man/ln" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/usr/man/ls" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/usr/man/lshw" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/usr/man/lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/usr/man/man" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/usr/man/mkdir" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/usr/man/more" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/usr/man/mount" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/usr/man/mv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/usr/man/pastebin" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/usr/man/primary" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/usr/man/pwd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/usr/man/rc" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/usr/man/reboot" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/usr/man/redstone" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/usr/man/resolution" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/usr/man/rm" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/usr/man/rmdir" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/usr/man/set" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/usr/man/sh" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/usr/man/shutdown" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/usr/man/umount" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/usr/man/unalias" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/usr/man/unset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/usr/man/uptime" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/usr/man/useradd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/usr/man/userdel" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/usr/man/wget" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/usr/man/which" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/usr/man/yes" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/openOS/usr/misc/greetings.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/standard/components/GPU.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/standard/components/computer.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/standard/components/disk_drive.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/standard/components/geolyzer.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/standard/components/inventory_controller.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/standard/components/modem.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/standard/components/nc_fission_reactor.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/standard/components/screen.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/standard/components/transposer.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/standard/components/tunnel.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/standard/lib/colors.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/standard/lib/component.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/standard/lib/computer.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/standard/lib/event.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/standard/lib/filesystem.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/standard/lib/global.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/standard/lib/internet.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/standard/lib/os.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/standard/lib/robot.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/standard/lib/serialization.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/standard/lib/shell.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/standard/lib/sides.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/standard/lib/term.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/standard/lib/thread.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/nuke-manager" beforeDir="false" afterPath="$PROJECT_DIR$/nuke-manager" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/nuke-manager/bin/nuke_manager.lua" beforeDir="false" afterPath="$PROJECT_DIR$/nuke-manager/bin/nuke_manager.lua" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/nuke-manager/bin/nuke_manager_config.lua" beforeDir="false" afterPath="$PROJECT_DIR$/nuke-manager/bin/nuke_manager_config.lua" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/nuke-manager/lib/nuke_manager/config_utils.lua" beforeDir="false" afterPath="$PROJECT_DIR$/nuke-manager/lib/nuke_manager/config_utils.lua" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/nuke-manager/lib/nuke_manager/logging.lua" beforeDir="false" afterPath="$PROJECT_DIR$/nuke-manager/lib/nuke_manager/logging.lua" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/nuke-manager/lib/nuke_manager/utils.lua" beforeDir="false" afterPath="$PROJECT_DIR$/nuke-manager/lib/nuke_manager/utils.lua" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ocpt/bin/ocpt.lua" beforeDir="false" afterPath="$PROJECT_DIR$/ocpt/bin/ocpt.lua" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ocpt/lib/ocpt.lua" beforeDir="false" afterPath="$PROJECT_DIR$/ocpt/lib/ocpt.lua" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test.lua" beforeDir="false" afterPath="$PROJECT_DIR$/test.lua" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -56,16 +243,16 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "ShowUsagesActions.previewPropertyKey": "true",
-    "git-widget-placeholder": "master",
-    "ignore.virus.scanning.warn.message": "true",
-    "kotlin-language-version-configured": "true",
-    "settings.editor.selected.configurable": "reference.settingsdialog.IDE.editor.colors.Language Server"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;ShowUsagesActions.previewPropertyKey&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;reference.settingsdialog.IDE.editor.colors.Language Server&quot;
   }
-}]]></component>
+}</component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">

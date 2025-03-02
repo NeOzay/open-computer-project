@@ -50,8 +50,13 @@ local function scan()
     return crop
 end
 
-
+---@param crop crop
+---@param farm "working"|"storage"
+---@return boolean
 local function isWeed(crop, farm)
+    if not crop.isCrop then
+       return false
+    end
     if farm == 'working' then
         return crop.name == 'weed' or
             crop.name == 'Grass' or
@@ -65,6 +70,7 @@ local function isWeed(crop, farm)
             crop.re > config.storageMaxResistance or
             (crop.name == 'venomilia' and crop.gr > 7)
     end
+    return false
 end
 
 

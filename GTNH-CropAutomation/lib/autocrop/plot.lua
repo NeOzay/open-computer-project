@@ -105,7 +105,7 @@ function Plot:cleanUp()
 	for x, y in self:Iterator() do
 		gps.go(x, y)
 		local crop = scanner.scan()
-		if crop.type == "2" or crop.name == "emptyCrop" or scanner.isWeed(crop, "working") then
+		if (crop.type == "2" or crop.name == "emptyCrop" or scanner.isWeed(crop, "working")) then
 			robot.swingDown()
 			-- Pickup
 			if config.KeepDrops then

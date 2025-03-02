@@ -1,6 +1,4 @@
 {
-	"Lua.diagnostics.globals": [
-	],
 	"workbench.colorTheme": "Monokai Pro (Filter Spectrum)",
 	"editor.semanticHighlighting.enabled": true,
 	"[json]": {
@@ -9,7 +7,6 @@
 		},
 		"editor.suggest.insertMode": "replace"
 	},
-	"Lua.runtime.version": "Lua 5.3",
 	"material-icon-theme.folders.theme": "specific",
 	"editor.glyphMargin": false,
 	"editor.folding": true,
@@ -23,27 +20,40 @@
 		"**/CVS": true,
 		"**/.DS_Store": true
 	},
-	"Lua.workspace.library": [
-		"C:/Users/colpa/IdeaProjects/Open Computer Project/doc/standard/lib",
-		"C:/Users/colpa/IdeaProjects/Open Computer Project/doc/standard/components",
-		"C:/Users/colpa/IdeaProjects/Open Computer Project/doc/openOS/lib/",
-		
-	],
-
-	"Lua.workspace.ignoreDir":[
+	"Lua.workspace.ignoreDir": [
 		".vscode",
-		"doc",
+		//"doc",
 		"openOS",
 		//"programs.cfg"
 	],
 	"Lua.runtime.pathStrict": false,
 	"Lua.hint.setType": true,
-	"Lua.workspace.checkThirdParty": false,
-	"Lua.semantic.annotation": true,
-	"Lua.semantic.keyword": true,
-	"Lua.semantic.variable": true,
+	"Lua.misc.parameters": [
+	//"--develop=true",
+	//"--dbgport=11428"
+	],
+	"Lua.diagnostics.disable": [
+		"lowercase-global",
+		//"need-check-nil",
+		//"duplicate-set-field",
+		//"unbalanced-assignments"
+	],
+
+	//"Lua.misc.executablePath": "C:\\Users\\colpa\\IdeaProjects\\lua-language-server\\bin\\lua-language-server.exe",
 	"vscode-lua-format.configPath": ".vscode/lua-format.txt",
 	"files.associations": {
 		"*.cfg": "properties"
 	},
+	"vscode-lua-minify.flavour": "lua-format",
+	"vscode-lua-minify.renameVariables": true,
+	"Lua.runtime.version": "Lua 5.3",
+	"Lua.workspace.library": [
+		"C:/Users/colpa/IdeaProjects/LuaLs-addon/OpenComputer-def/library"
+	],
+	"Lua.diagnostics.globals": [
+		"vim",
+		"computer",
+		"component"
+	],
+
 }

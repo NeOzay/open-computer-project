@@ -50,13 +50,13 @@ local config = {
    -- The coordinate for charger
    chargerPos = {0, 0},
    -- The coordinate for the container contains crop sticks
-   stickContainerPos = {-1, 0},
+   stickContainerPos = {-2, 0},
    -- The coordinate for the container to store seeds, products, etc
-   storagePos = {-2, 0},
+   storagePos = {-3, 0},
    -- The coordinate for the farmland that the dislocator is facing
-   relayFarmlandPos = {1, 1},
+   relayFarmlandPos = {1, 0},
    -- The coordinate for the transvector dislocator
-   dislocatorPos = {1, 2},
+   dislocatorPos = {1, 1},
 
    -- The slot for spade
    spadeSlot = 0,

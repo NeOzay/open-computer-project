@@ -35,10 +35,6 @@ function manager.setupAllPlot()
 	end
 end
 
-function manager.cleanUpAllPlot()
-
-end
-
 function manager.createAllPlots()
 	checkPlotShape()
 	manager.plots = {}
@@ -113,6 +109,11 @@ function manager.reserveStorageSlot(crop)
 		db.copy(crop, x, y)
 		return x, y
 	end
+end
+
+---@param crop crop
+function manager.sendToChest(crop)
+	
 end
 
 function manager.readyForNextRound()

@@ -18,7 +18,7 @@ end
 ---@class assSlot
 ---@field [1] Item
 ---@field [2] Item
----@field	[3] Item
+---@field [3] Item
 ---@field [4] Item
 ---@field [5] Item
 ---@field [6] Item
