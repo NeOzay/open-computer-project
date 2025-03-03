@@ -41,7 +41,7 @@ end
 ---@field outputSide integer
 ---@field threshold integer
 ---@field inputs Stock_Keeper.itemStack[]
----@field inputSide integer
+---@field inputSide? integer
 ---@field inProcess integer
 ---@field row? RowManager.Row
 ---@field nameCell? RowManager.Cell
@@ -85,7 +85,7 @@ function Recipe:addIngredients(items)
 end
 
 ---@param output integer
----@param input integer
+---@param input? integer
 function Recipe:setSides(output, input)
 	self.outputSide = output
 	self.inputSide = input
@@ -158,25 +158,32 @@ function Handle:addRecipe(item, threshold)
 	return recipe
 end
 
-function Handle:feachInputChest()
-	local inputChestMap = {} ---@type table<integer, table<string, integer>>
-	for index, recipe in ipairs(self.recipes) do
-		if not inputChestMap[recipe.inputSide] then
-			local map = {} ---@type table<string, integer>
-			for slot=  1, self.transposer.getInventorySize(recipe.inputSide) do
-				local item = self.transposer.getStackInSlot(recipe.inputSide, slot)
-				if item then
-					if map[item.name..item.damage] then
-						self.transposer.transferItem(recipe.inputSide, recipe.inputSide, item.size, slot, map[item.name..item.damage])
-					else
-						map[item.name..item.damage] = slot
-					end
+---@param self Stock_Keeper.inventoryHandle
+---@param side integer
+local function feachInputChest(self,  side)
+		local map = {} ---@type table<string, integer>
+		for slot=  1, self.transposer.getInventorySize(side) or 0 do
+			local item = self.transposer.getStackInSlot(side, slot)
+			if item then
+				if map[item.name..item.damage] then
+					self.transposer.transferItem(side, side, item.size, slot, map[item.name..item.damage])
+				else
+					map[item.name..item.damage] = slot
 				end
 			end
-			inputChestMap[recipe.inputSide] = map
+		end
+		return map
+end
+
+---@param side integer?
+function Handle:feachInputsChest(side)
+	local inputsChestMap = {} ---@type table<integer, table<string, integer>>
+	for index, recipe in ipairs(self.recipes) do
+		if recipe.inputSide and not inputsChestMap[recipe.inputSide] then
+			inputsChestMap[recipe.inputSide] = feachInputChest(self, recipe.inputSide)
 		end
 	end
-	return inputChestMap
+	return inputsChestMap
 end
 
 ---@class Stock_Keeper
@@ -186,7 +193,7 @@ local handles = {} ---@type Stock_Keeper.inventoryHandle[]
 
 ---@param transposerAddress string
 ---@param interfaceAddress string
-function Stock_Keeper.addTransposer(transposerAddress, interfaceAddress)
+function Stock_Keeper.addStock(transposerAddress, interfaceAddress)
 	local handle = newHandle(transposerAddress, interfaceAddress)
 	table.insert(handles, handle)
 	return handle
@@ -198,6 +205,18 @@ end
 ---@return Stock_Keeper.itemStack
 function Stock_Keeper.createItemStack(name, damage, size)
 	return stack(name, damage or 0, size or 1)
+end
+
+---@type integer?
+local globalInputSide
+---@type Stock_Keeper.inventoryHandle?
+local globalHandle
+
+---@param handle Stock_Keeper.inventoryHandle
+---@param side integer
+function Stock_Keeper.setGlobalRecipeInput(handle, side)
+	globalHandle = handle
+	globalInputSide = side
 end
 
 local itemsInNetwork = {} ---@type table<string, ItemStack>
@@ -242,8 +261,9 @@ function Stock_Keeper.run()
 	collectItemsTofound()
 	while true do
 		collectItemInItemInNetwork()
+		local globalInputChest = globalHandle and globalInputSide and feachInputChest(globalHandle, globalInputSide)
 		for _, handle in ipairs(handles) do
-			local inputChestMap = handle:feachInputChest()
+			local inputsChestMap = handle:feachInputsChest()
 			local interface = handle.interface
 			local transposer = handle.transposer
 
@@ -280,15 +300,18 @@ function Stock_Keeper.run()
 					end
 				end
 				os.sleep(1)
-				local inputChest = inputChestMap[recipe.inputSide]
+				local inputChest = recipe.inputSide and inputsChestMap[recipe.inputSide] or globalInputChest
 				if inputChest and recipe.inProcess > 0 then
 					local slot = inputChest[output.name..output.damage]
 					if slot then
-						move = transposer.transferItem(recipe.inputSide, handle.interfaceSide, recipe.inProcess, slot, 9)
+						if recipe.inputSide then
+							move = transposer.transferItem(recipe.inputSide, handle.interfaceSide, recipe.inProcess, slot, 9)
+						elseif globalHandle and globalInputSide then
+							move = transposer.transferItem(globalInputSide, globalHandle.interfaceSide, recipe.inProcess, slot, 9)
+						end
 						recipe.inProcess = recipe.inProcess - move
 					end
 				end
-				--print(recipe.output.name, recipe.inProcess)
 				recipe.inProcessCell:setText(recipe.inProcess)
 				recipe.stockCell:setText((itemInNetwork and itemInNetwork.size or 0) + move)
 				if recipe.currentCell.text == "+" then
