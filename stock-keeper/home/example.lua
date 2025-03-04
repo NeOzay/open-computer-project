@@ -16,7 +16,6 @@ local stainlessSteelDust = stack(metaitem01, 2306, 64)
 local irondust = stack(metaitem01, 2032, 64)
 local steel = stack(metaitem01, 11305, 64)
 
-
 inv1:addRecipe(stainlessSteel, 500)
 	:addIngredient(stainlessSteelDust):setSides(sides.south, sides.west)
 

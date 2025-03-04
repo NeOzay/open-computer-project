@@ -19,6 +19,9 @@ local wget
 local function downloadFile(url, path)
    if not wget then
       wget = loadfile("/bin/wget.lua")
+      if not wget then
+         error("Could not find wget.lua")
+      end
    end
    wget("-fq", url, path)
 end
@@ -88,10 +91,12 @@ local function cached(f)
    )
 end
 
+---@param handle file*
+---@overload fun(handle: number, proxy: filesystem): string
 local function readall(handle, proxy)
    local data = {}
    local chunk
-   if proxy then
+   if proxy and type(handle) == "number" then
       repeat
          chunk = proxy.read(handle, math.huge)
          data[#data + 1] = chunk
@@ -118,7 +123,7 @@ local function readFile(path)
    return s
 end
 
-local _cache
+local _cache ---@type opdata.svd
 ---@return opdata.svd
 local function getCache()
    if not _cache then
@@ -138,7 +143,7 @@ local function getCache()
    return _cache
 end
 
-local _config
+local _config ---@type oppm.cfg
 ---@return oppm.cfg
 local function getConfig()
    if not _config then
@@ -198,17 +203,17 @@ end
 ---@param address string
 ---@return table<string, oppm.package>?
 local function getProgramsFile(address)
-   local proxy = component.proxy(address) ---@cast proxy filesystem
+   local proxy = component.proxy(address, "filesystem")
    if proxy.exists("/programs.cfg") then
       local file = proxy.open("/programs.cfg")
-      local s = readall(file, proxy) ---@cast s string
+      local s = readall(file, proxy)
       proxy.close(file)
       return unserialize(s)
    end
 end
 
 local function saveProgramsFile(address, data)
-   local proxy = component.proxy(address) ---@cast proxy filesystem
+   local proxy = component.proxy(address, "filesystem")
    local file = proxy.open("/programs.cfg", "w")
    if not file then
       error("Failed to open file for writing")
@@ -273,10 +278,6 @@ local getAvailablePackages = cached(
       return data
    end
 )
-
-
-
-
 
 ---@param package oppt.package.handler
 local function resolveFiles(package)
@@ -408,7 +409,7 @@ function Package.list(installed, filter)
    if filter then
       filter = string.lower(filter)
    end
-   local packages = {}
+   local packages = {} ---@type string[]
    if installed then
       local lPacks = {}
       local packs = getCache()
@@ -482,6 +483,10 @@ function Package:install(dest, force)
    dest = shell.resolve(dest)
    local pack = self.pack
 
+   if cache[pack] then
+      return false, "Package has already been installed"
+   end
+
    if filesystem.exists(dest) then
       if not filesystem.isDirectory(dest) then
          return false, "Path points to a file, needs to be a directory."
@@ -492,11 +497,26 @@ function Package:install(dest, force)
       return false, "Destination does not exist."
    end
 
-   if cache[pack] then
-      return false, "Package has already been installed"
-   end
-
    cache[pack] = {}
+   local function copy(address, from, to)
+      local proxy = component.proxy(address) ---@cast proxy filesystem
+      local data
+      local input, reason = proxy.open(from, "rb")
+      if input then
+         local output = filesystem.open(to, "wb")
+         if output then
+            repeat
+               data, reason = proxy.read(input, 1024)
+               if not data then break end
+               data, reason = output:write(data)
+               if not data then data, reason = false, "failed to write" end
+            until not data
+            output:close()
+         end
+         proxy.close(input)
+      end
+      return data == nil, reason
+   end
    for file, target in pairs(self.files) do
       local localPath
       local branch, repoPath = string.match(file, "^%??(.-)/(.+)")
@@ -514,31 +534,12 @@ function Package:install(dest, force)
          localPath = filesystem.concat(lPath, gsub(repoPath, ".+(/.-)$", "%1"))
       end
 
-      local soft = string.find(file, "^%?") and filesystem.exists(localPath) and not force
+      local soft = string.find(file, "^%?") and filesystem.exists(localPath) and not force or false
       if soft then
          goto continue
       end
       local success, msg
       if options.offline then
-         local function copy(address, from, to)
-            local proxy = component.proxy(address) ---@cast proxy filesystem
-            local data
-            local input, reason = proxy.open(from, "rb")
-            if input then
-               local output = filesystem.open(to, "wb")
-               if output then
-                  repeat
-                     data, reason = proxy.read(input, 1024)
-                     if not data then break end
-                     data, reason = output:write(data)
-                     if not data then data, reason = false, "failed to write" end
-                  until not data
-                  output:close()
-               end
-               proxy.close(input)
-            end
-            return data == nil, reason
-         end
          success, msg = copy(self.repoName, filesystem.concat(branch, repoPath), localPath)
       else
          self.repo:changeBranch(branch)
@@ -639,6 +640,19 @@ function Package:addToDisk(address)
       self.repo:changeBranch(branch)
       local success, msg = self.repo:downloadFile(repoPath, target)
    end
+   if self.info.dependencies then
+      for index, depName in ipairs(self.info.dependencies) do
+         local dep = Package.getPackage(depName)
+         if dep then
+            local success, err = dep:addToDisk(address)
+            if not success then
+               return false, "Error while trying to install dependency package " .. depName .. ": " .. err
+            end
+         else
+            return false, "Dependency package " .. depName .. " does not found."
+         end
+      end
+   end
    return true
 end
 
@@ -656,7 +670,7 @@ function Package:removeToDisk(address)
       return false, "No programs.cfg file found on disk"
    end
    programs = getProgramsFile(address)
-   if not programs[self.pack] then
+   if not programs or programs and not programs[self.pack] then
       return false, "Package does not exist on disk"
    end
    programs[self.pack] = nil
