@@ -3,6 +3,7 @@ local event = require("event")
 local fs = require("filesystem")
 local shell = require("shell")
 local term = require("term")
+local computer = require("computer")
 
 local ocpt = require("ocpt")
 
@@ -130,19 +131,53 @@ if args[1] == "install" then
 	return
 end
 
+---@return string[]
+local function getAvailableFilesystem()
+	local function isvalidFilesystem(address)
+		local proxy = component.proxy(address) ---@cast proxy filesystem
+		return proxy.list("/")[1] == nil or proxy.exists("/programs.cfg")
+	end
+	
+   local filesystems = {} ---@type string[]
+   local tmpfs = computer.tmpAddress()
+   for address, type in component.list("filesystem") do
+      if address ~= tmpfs then
+         if isvalidFilesystem(address) then
+            filesystems[#filesystems + 1] = address
+         end
+      end
+   end
+   return filesystems
+end
+
 if args[1] == "floppy" then
 	if not args[2] then
 		io.stderr:write("No package specified\n")
 		return
 	end
 	if not args[3] then
-		io.stderr:write("No disk address specified\n")
+		local fsList = getAvailableFilesystem()
+		if not fsList[1] then
+			io.stderr:write("No valid filesystem found\n")
+			return
+		end
+		for index, disk in ipairs(fsList) do
+			print(index .. ": " .. disk)
+		end
+		io.write("Select a filesystem: ")
+		local input
+		while not input do
+			input = fsList[tonumber(io.read())]
+		end
+		args[3] = input
 	end
+	print("searching package: " .. args[2].."...")
 	local pack = ocpt.getPackage(args[2])
 	if not pack then
 		io.stderr:write("Package does not exist\n")
 		return
 	end
+	print("Copying package '" .. pack.info.name .. "' to disk")
 	print(pack:addToDisk(args[3]))
 	return
 end

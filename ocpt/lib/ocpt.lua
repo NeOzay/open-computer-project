@@ -6,13 +6,16 @@ local serial = require("serialization")
 local shell = require("shell")
 local term = require("term")
 
-local internet = require("internet")
+local internet
+if component.isAvailable("internet") then
+   internet = require("internet")
+end 
 
-local github = require("github")
+local hasGithub, github = pcall(require,"github")
 
 local options = {
    nocache = false, --useless
-   offline = false,
+   offline = (not (internet and hasGithub)),
 }
 
 local wget
@@ -327,7 +330,7 @@ Package.__index = Package
 ---@param repo string
 ---@param packName string
 ---@param packageInfo oppm.package
-function Package.new(repo, packName, packageInfo)
+local function PackageNew(repo, packName, packageInfo)
    local self = setmetatable({}, Package)
    if not options.offline then
       local owner, reponame = string.match(repo, "([^/]+)/([^/]+)")
@@ -358,7 +361,7 @@ function Package.getPackage(pack)
          if programs then
             for name, info in pairs(programs) do
                if name == pack then
-                  local p = Package.new(address, name, info)
+                  local p = PackageNew(address, name, info)
                   _packObjectCache[pack] = p
                   return p
                end
@@ -381,7 +384,7 @@ function Package.getPackage(pack)
       if type(packlist) == "table" then
          for name, info in pairs(packlist) do
             if name == pack then
-               local p = Package.new(j.repo, name, info)
+               local p = PackageNew(j.repo, name, info)
                _packObjectCache[pack] = p
                return p
             end
@@ -393,7 +396,7 @@ function Package.getPackage(pack)
    for repo, data in pairs(lRepos.repos) do
       for name, info in pairs(data) do
          if name == pack then
-            local p = Package.new(repo, name, info)
+            local p = PackageNew(repo, name, info)
             _packObjectCache[pack] = p
             return p
          end
@@ -568,15 +571,14 @@ function Package:install(dest, force)
             if not filesystem.exists(filesystem.path(localPath)) then
                filesystem.makeDirectory(filesystem.path(localPath))
             end
-            local response
-            success, response = pcall(downloadFile, dep, localPath)
-            if success and response then
+            success = pcall(downloadFile, dep, localPath)
+            if success then
                cache[pack][dep] = localPath
                saveCache(cache)
             else
-               response = response or "no error message"
-               term.write("Error while installing files for package '" ..
-                  dep .. "': " .. response .. ". Reverting installation... ")
+
+               term.write("Error while downloading files for package '" ..
+                  dep .. "'" .. ". Reverting installation... ")
                filesystem.remove(localPath)
                for o, p in pairs(cache[dep]) do
                   filesystem.remove(p)
@@ -635,6 +637,18 @@ function Package:addToDisk(address)
    programs[self.pack] = self.info
    programs[self.pack].files = self.files
    saveProgramsFile(address, programs)
+   if not programs["ocpt"] then
+      io.stdout:write("ocpt package not found on disk. Try to add it first.\n")
+      local ocpt = Package.getPackage("ocpt")
+      if ocpt then
+         local success, err = ocpt:addToDisk(address)
+         if not success then
+            io.stderr:write("Error while trying to add ocpt to disk: " .. err .. "\n")
+         end
+      else
+         io.stderr:write("unable to find ocpt package\n")
+      end
+   end
    local disk = filesystem.concat("/mnt/" .. fs.address:sub(1, 3), self.pack)
    if filesystem.exists(disk) then
       return false, "directory already exists"
@@ -647,9 +661,12 @@ function Package:addToDisk(address)
       end
       self.repo:changeBranch(branch)
       local success, msg = self.repo:downloadFile(repoPath, target)
+      if not success then
+         return false, "Error while downloading file '" .. repoPath .. "': " .. msg
+      end
    end
    if self.info.dependencies then
-      for index, depName in ipairs(self.info.dependencies) do
+      for depName in pairs(self.info.dependencies) do
          local dep = Package.getPackage(depName)
          if dep then
             local success, err = dep:addToDisk(address)
