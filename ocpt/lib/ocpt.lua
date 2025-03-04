@@ -477,6 +477,7 @@ end
 ---@return boolean success
 ---@return string? msg
 function Package:install(dest, force)
+   local success, reason = true, nil ---@type boolean, string?
    local cache = getCache()
    local config = getConfig()
    dest = dest or config.path
@@ -501,7 +502,7 @@ function Package:install(dest, force)
    local function copy(address, from, to)
       local proxy = component.proxy(address) ---@cast proxy filesystem
       local data
-      local input, reason = proxy.open(from, "rb")
+      local input = proxy.open(from, "rb")
       if input then
          local output = filesystem.open(to, "wb")
          if output then
@@ -517,6 +518,7 @@ function Package:install(dest, force)
       end
       return data == nil, reason
    end
+
    for file, target in pairs(self.files) do
       local localPath
       local branch, repoPath = string.match(file, "^%??(.-)/(.+)")
@@ -538,29 +540,21 @@ function Package:install(dest, force)
       if soft then
          goto continue
       end
-      local success, msg
       if options.offline then
-         success, msg = copy(self.repoName, filesystem.concat(branch, repoPath), localPath)
+         success, reason = copy(self.repoName, filesystem.concat(branch, repoPath), localPath)
       else
          self.repo:changeBranch(branch)
-         success, msg = self.repo:downloadFile(repoPath, localPath)
+         success, reason = self.repo:downloadFile(repoPath, localPath)
       end
-      if not success then
-         term.write("Error while installing files for package '" .. pack .. "': " ..
-            msg .. ".\nReverting installation...\n")
-         filesystem.remove(localPath)
-         for o, p in pairs(cache[pack]) do
-            filesystem.remove(p)
-            cache[pack][o] = nil
-         end
-         cache[pack] = nil
-         return false, "Error while installing files for package '" .. pack .. "': " .. msg
-      end
+
       cache[pack][file] = localPath
+      if not success then
+         break
+      end
       ::continue::
    end
 
-   if self.info.dependencies then
+   if self.info.dependencies and success then
       term.write("Done.\nInstalling Dependencies...\n")
       for dep, target in pairs(self.info.dependencies) do
          local localPath
@@ -592,12 +586,25 @@ function Package:install(dest, force)
          else
             local depPack = Package.getPackage(string.lower(dep))
             if not depPack then
-               term.write("\nDependency package " .. dep .. " does not exist.")
+               success, reason = false, ("\nDependency package " .. dep .. " does not exist.")
             else
-               depPack:install(localPath, force)
+               success, reason = depPack:install(localPath, force)
             end
          end
+         if not success then
+            break
+         end
       end
+   end
+   if not success then
+      term.write("Error while installing files for package '" .. pack .. "': " ..
+         reason .. ".\nReverting installation...\n")
+      for o, p in pairs(cache[pack]) do
+         filesystem.remove(p)
+         cache[pack][o] = nil
+      end
+      cache[pack] = nil
+      return false, "Error while installing files for package '" .. pack .. "':\n\t" .. reason
    end
    saveCache(cache)
    return true
