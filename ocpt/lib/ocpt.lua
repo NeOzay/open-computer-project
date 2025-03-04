@@ -485,7 +485,7 @@ function Package:install(dest, force)
    local pack = self.pack
 
    if cache[pack] then
-      return false, "Package has already been installed"
+      return true, "Package has already been installed"
    end
 
    if filesystem.exists(dest) then
@@ -568,7 +568,8 @@ function Package:install(dest, force)
             if not filesystem.exists(filesystem.path(localPath)) then
                filesystem.makeDirectory(filesystem.path(localPath))
             end
-            local success, response = pcall(downloadFile, dep, localPath)
+            local response
+            success, response = pcall(downloadFile, dep, localPath)
             if success and response then
                cache[pack][dep] = localPath
                saveCache(cache)
