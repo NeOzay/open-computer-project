@@ -60,7 +60,15 @@ local function downloadFile(repo, path, dest)
    local url = ('https://raw.githubusercontent.com/%s/%s/%s/%s'):format(repo.user, repo.name, repo.sha, encodeURI(path))
    --print(url)
    local handle = inet.request(url, nil, headers)
-   while not handle.finishConnect() do os.sleep(0.2) end
+   while true  do
+      local status, err = handle.finishConnect()
+      if status then
+         break
+      elseif err then
+         return false, err
+      end
+      os.sleep(0.2)
+   end
    if handle.response() ~= 200 then
       return false, 'Could not get file from ' .. url.. " code: " .. tostring(handle.response())
    end
