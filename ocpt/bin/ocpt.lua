@@ -14,14 +14,15 @@ local args, options = shell.parse(...)
 local function printUsage()
 	print("OpenPrograms Package Manager, use this to browse through and download OpenPrograms programs easily")
 	print("Usage:")
-	print("'oppm list [-i]' to get a list of all the available program packages")
-	print("'oppm list [-i] <filter>' to get a list of available packages containing the specified substring")
+	print("'ocpt list [-i]' to get a list of all the available program packages")
+	print("'ocpt list [-i] <filter>' to get a list of available packages containing the specified substring")
 	print(" -i: Only list already installed packages")
-	print("'oppm info <package>' to get further information about a program package")
-	print("'oppm install [-f] <package> [path]' to download a package to a directory on your system (or /usr by default)")
-	print("'oppm update <package>' to update an already installed package")
-	print("'oppm update all' to update every already installed package")
-	print("'oppm uninstall <package>' to remove a package from your system")
+	print("'ocpt info <package>' to get further information about a program package")
+	print("'ocpt install [-f] <package> [path]' to download a package to a directory on your system (or /usr by default)")
+	print("'ocpt update <package>' to update an already installed package")
+	print("'ocpt update all' to update every already installed package")
+	print("'ocpt uninstall <package>' to remove a package from your system")
+	print("'ocpt floppy [-r] <package> [filesystem]' to copy a package to a floppy disk")
 	print(
 		"'oppm register <repository>' to register a package repository locally\n  Must be a valid GitHub repo containing programs.cfg")
 	print("'oppm unregister <repository>' to remove a package repository from your local registry")
@@ -172,6 +173,15 @@ if args[1] == "floppy" then
 			input = fsList[tonumber(io.read())]
 		end
 		args[3] = input
+	end
+	if options.r then
+		local success, err = ocpt.removeToDisk(args[2], args[3])
+		if success then
+			io.write("Package removed successfully\n")
+		else
+			io.stderr:write("Failed to remove package: " .. err .. "\n")
+		end
+		return
 	end
 	print("searching package: " .. args[2].."...")
 	local pack = ocpt.getPackage(args[2])

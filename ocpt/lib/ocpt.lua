@@ -134,6 +134,8 @@ local function getCache()
       local path = "/etc/opdata.svd"
       if not filesystem.exists(path) then
          _cache = { _repos = {} }
+         local repo = "NeOzay/open-computer-project"
+         _cache._repos[repo] = { ["repo"] = repo }
          return _cache
       end
       local opdata = readFile(path)
@@ -349,7 +351,7 @@ local function PackageNew(repo, packName, packageInfo)
    return self
 end
 
-local f
+local fetch
 local _packRepoCache = {} ---@type table<string, string>
 --local _packNameCache = {} ---@type table<string, oppm.package>
 local _packObjectCache = {} ---@type table<string, oppt.package.handler>
@@ -367,9 +369,9 @@ local function getPackage(pack)
          error("Error while trying to get cached package " .. pack)
       end
    end
-   if not f then
+   if not fetch then
       local repos = getAvailableRepos()
-      f = coroutine.create(
+      fetch = coroutine.create(
       ---@param _pack string
          function(_pack)
             for _, j in pairs(repos) do
@@ -395,8 +397,8 @@ local function getPackage(pack)
             end
          end)
    end
-   if coroutine.status(f) ~= "dead" then
-      local success, p = coroutine.resume(f, pack)
+   if coroutine.status(fetch) ~= "dead" then
+      local success, p = coroutine.resume(fetch, pack)
       return p
    end
    return nil
@@ -744,27 +746,26 @@ function Package:addToDisk(address)
    return true
 end
 
+---@param pack string
 ---@param address string
 ---@return boolean success
 ---@return string? msg
-function Package:removeToDisk(address)
-   local fs = component.proxy(address)
+function Package.removeToDisk(pack, address)
+   local fs = component.proxy(address, "filesystem")
    if fs.type ~= "filesystem" and isvalidFilesystem(address) then
       return false, "Invalid filesystem"
    end
-   ---@cast fs filesystem
    local programs
    if not fs.exists("/programs.cfg") then
       return false, "No programs.cfg file found on disk"
    end
    programs = getProgramsFile(address)
-   if not programs or programs and not programs[self.pack] then
+   if not programs or programs and not programs[pack] then
       return false, "Package does not exist on disk"
    end
-   programs[self.pack] = nil
+   programs[pack] = nil
    saveProgramsFile(address, programs)
-   local packLocate = filesystem.concat("/mnt/" .. fs.address:sub(1, 3), self.pack)
-   filesystem.remove(packLocate)
+   fs.remove(pack)
    return true
 end
 
@@ -863,6 +864,7 @@ local function registerRepo(repo)
       svd._repos[repo] = { ["repo"] = repo }
       saveCache(svd)
    end
+   fetch = nil
    return true
 end
 
@@ -882,6 +884,7 @@ end
 return {
    list = Package.list,
    uninstall = Package.uninstall,
+   removeToDisk = Package.removeToDisk,
    update = Package.update,
    updateAll = Package.updateAll,
    getPackage = Package.getPackage,
