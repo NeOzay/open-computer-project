@@ -881,6 +881,18 @@ local function unregisterRepo(repo)
    return true
 end
 
+event.listen("component_added", function (name, address, componentType)
+   if componentType == "internet" and component.isAvailable("internet") then
+      options.offline = (not (internet and hasGithub))
+   end
+end)
+
+event.listen("component_removed", function (name, address, componentType)
+   if componentType == "internet" and not component.isAvailable("internet") then
+      options.offline = true
+   end
+end)
+
 return {
    list = Package.list,
    uninstall = Package.uninstall,
