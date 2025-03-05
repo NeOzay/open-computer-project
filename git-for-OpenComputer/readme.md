@@ -7,7 +7,7 @@ Installation
 ------------
 The easiest way to install this project on your computer is by running:
 
-    pastebin run kydcWA2y NeOzay/git-for-OpenComputer [<branch>]
+    pastebin run kydcWA2y git-for-OpenComputer 
 
 The branch or tag argument is optional, and defaults to 'master'.
 
