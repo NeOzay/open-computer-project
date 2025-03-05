@@ -32,18 +32,20 @@ local function install(name)
 
 	-- INSTALL
 	for index, file in ipairs(filesList) do
-		local dir = filesystem.path(file)
+		local dir = file
+		if not string.find(dir, "usr") then
+			dir = filesystem.concat("usr", dir)
+		end
 		local overwrite = true
-		if filesystem.exists(file) then
+		if not filesystem.exists(filesystem.path(dir)) then
+			filesystem.makeDirectory(filesystem.path(dir))
+		elseif filesystem.exists(dir) then
+			io.write(dir)
 			io.write("do you want to overwrite the following element?[y/N]:")
 			overwrite = string.lower(io.read()) == "y"
 		end
 		if overwrite then
-			if not filesystem.exists(dir) then
-				filesystem.makeDirectory(dir)
-			end
-
-			shell.execute(string.format('wget -f %s/%s/%s /%s', url, name, file, filesystem.concat("usr", file)))
+			shell.execute(string.format('wget -f %s/%s/%s /%s', url, name, file, dir))
 		end
 	end
 	filesystem.remove("_package")
