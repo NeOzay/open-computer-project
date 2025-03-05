@@ -9,9 +9,9 @@ local term = require("term")
 local internet
 if component.isAvailable("internet") then
    internet = require("internet")
-end 
+end
 
-local hasGithub, github = pcall(require,"github")
+local hasGithub, github = pcall(require, "github")
 
 local options = {
    nocache = false, --useless
@@ -99,8 +99,9 @@ end
 local function readall(handle, proxy)
    local data = {}
    local chunk
-   if proxy and type(handle) == "number" then
+   if proxy then
       repeat
+         ---@diagnostic disable-next-line: param-type-mismatch
          chunk = proxy.read(handle, math.huge)
          data[#data + 1] = chunk
       until not chunk
@@ -249,38 +250,39 @@ local getAvailableRepos = cached(
    end
 )
 
-local getAvailablePackages = cached(
+local getAvailablePackages =
 ---@param repo string
 ---@return table<string, oppm.package>?
-   function(repo)
-      if options.offline then
-         local packs = {}
-         local disk = getAvailableFilesystem()
-         for _, address in ipairs(disk) do
-            local programs = getProgramsFile(address)
-            if programs then
-               for name, info in pairs(programs) do
-                  packs[name] = info
-               end
-            end
-         end
-         return packs
-      end
-      local success, sPackages = pcall(getContent, "https://raw.githubusercontent.com/" .. repo .. "/master/programs.cfg")
-      if not success or not sPackages or sPackages == "" then
-         io.stderr:write("Error while trying to get programs.cfg file for " .. repo .. "\n")
-         return
-      end
-      local data
-      success, data = pcall(unserialize, sPackages)
-      if not success or not data then
-         io.stderr:write(sPackages)
-         io.stderr:write("Error while trying to unserialize packages: " .. sPackages .. "\n" .. data)
-         return
-      end
-      return data
-   end
-)
+    function(repo)
+       if options.offline then
+          local packs = {}
+          local disk = getAvailableFilesystem()
+          for _, address in ipairs(disk) do
+             local programs = getProgramsFile(address)
+             if programs then
+                for name, info in pairs(programs) do
+                   packs[name] = info
+                end
+             end
+          end
+          return packs
+       end
+       local success, sPackages = pcall(getContent,
+          "https://raw.githubusercontent.com/" .. repo .. "/master/programs.cfg")
+       if not success or not sPackages or sPackages == "" then
+          io.stderr:write("Error while trying to get programs.cfg file for " .. repo .. "\n")
+          return
+       end
+       local data
+       success, data = pcall(unserialize, sPackages)
+       if not success or not data then
+          io.stderr:write(sPackages)
+          io.stderr:write("Error while trying to unserialize packages: " .. sPackages .. "\n" .. data)
+          return
+       end
+       return data
+    end
+
 
 ---@param package oppt.package.handler
 local function resolveFiles(package)
@@ -347,7 +349,59 @@ local function PackageNew(repo, packName, packageInfo)
    return self
 end
 
-local _packObjectCache = {}
+local f
+local _packRepoCache = {} ---@type table<string, string>
+--local _packNameCache = {} ---@type table<string, oppm.package>
+local _packObjectCache = {} ---@type table<string, oppt.package.handler>
+---@param pack string
+---@return oppt.package.handler?
+local function getPackage(pack)
+   if _packObjectCache[pack] then
+      return _packObjectCache[pack]
+   end
+   if _packRepoCache[pack] then
+      local infos = getAvailablePackages(_packRepoCache[pack])
+      if infos and infos[pack] then
+         return PackageNew(_packRepoCache[pack], pack, infos[pack])
+      else
+         error("Error while trying to get cached package " .. pack)
+      end
+   end
+   if not f then
+      local repos = getAvailableRepos()
+      f = coroutine.create(
+      ---@param _pack string
+         function(_pack)
+            for _, j in pairs(repos) do
+               if not j.repo then
+                  goto continue
+               end
+               local packlist = getAvailablePackages(j.repo)
+               if packlist == nil then
+                  io.stderr:write("Error while trying to receive packages list for " .. j.repo .. "\n")
+                  goto continue
+               end
+               if type(packlist) == "table" then
+                  for name, info in pairs(packlist) do
+                     _packRepoCache[name] = j.repo
+                     if name == _pack then
+                        local p = PackageNew(j.repo, name, info)
+                        _packObjectCache[_pack] = p
+                        _pack = coroutine.yield(p)
+                     end
+                  end
+               end
+               ::continue::
+            end
+         end)
+   end
+   if coroutine.status(f) ~= "dead" then
+      local success, p = coroutine.resume(f, pack)
+      return p
+   end
+   return nil
+end
+
 ---@param pack string
 ---@return oppt.package.handler?
 function Package.getPackage(pack)
@@ -368,29 +422,6 @@ function Package.getPackage(pack)
             end
          end
       end
-      return nil
-   end
-
-   local repos = getAvailableRepos()
-   for _, j in pairs(repos) do
-      if not j.repo then
-         goto continue
-      end
-      local packlist = getAvailablePackages(j.repo)
-      if packlist == nil then
-         io.stderr:write("Error while trying to receive package list for " .. j.repo .. "\n")
-         goto continue
-      end
-      if type(packlist) == "table" then
-         for name, info in pairs(packlist) do
-            if name == pack then
-               local p = PackageNew(j.repo, name, info)
-               _packObjectCache[pack] = p
-               return p
-            end
-         end
-      end
-      ::continue::
    end
    local lRepos = getConfig()
    for repo, data in pairs(lRepos.repos) do
@@ -402,7 +433,7 @@ function Package.getPackage(pack)
          end
       end
    end
-   return nil
+   return getPackage(pack)
 end
 
 ---@param installed? boolean
@@ -433,30 +464,30 @@ function Package.list(installed, filter)
                table.insert(packages, k)
             end
          end
-      end
-
-      local repos = getAvailableRepos()
-      for _, j in pairs(repos) do
-         if j.repo then
-            local lPacks = getAvailablePackages(j.repo)
-            if lPacks == nil then
-               io.stderr:write("Error while trying to receive packages available for " .. j.repo .. "\n")
-            elseif type(lPacks) == "table" then
-               for k, kt in pairs(lPacks) do
-                  if not kt.hidden then
-                     table.insert(packages, k)
+      else
+         local repos = getAvailableRepos()
+         for _, j in pairs(repos) do
+            if j.repo then
+               local lPacks = getAvailablePackages(j.repo)
+               if lPacks == nil then
+                  io.stderr:write("Error while trying to receive packages available for " .. j.repo .. "\n")
+               elseif type(lPacks) == "table" then
+                  for k, kt in pairs(lPacks) do
+                     if not kt.hidden then
+                        table.insert(packages, k)
+                     end
                   end
                end
             end
          end
-      end
 
-      local config = getConfig()
-      if config.repos and not options.offline then
-         for _, j in pairs(config.repos) do
-            for k, kt in pairs(j) do
-               if not kt.hidden then
-                  table.insert(packages, k)
+         local config = getConfig()
+         if config.repos and not options.offline then
+            for _, j in pairs(config.repos) do
+               for k, kt in pairs(j) do
+                  if not kt.hidden then
+                     table.insert(packages, k)
+                  end
                end
             end
          end
@@ -473,6 +504,11 @@ function Package.list(installed, filter)
    end
    table.sort(packages, compare)
    return packages
+end
+
+local function sanitize_path(path)
+   local sanitized = path:gsub("[^%w%._%/%\\%- ]", "_")
+   return sanitized
 end
 
 ---@param dest string
@@ -502,6 +538,11 @@ function Package:install(dest, force)
    end
 
    cache[pack] = {}
+   ---@param address string
+   ---@param from string
+   ---@param to string
+   ---@return boolean
+   ---@return string?
    local function copy(address, from, to)
       local proxy = component.proxy(address) ---@cast proxy filesystem
       local data
@@ -544,7 +585,7 @@ function Package:install(dest, force)
          goto continue
       end
       if options.offline then
-         success, reason = copy(self.repoName, filesystem.concat(branch, repoPath), localPath)
+         success, reason = copy(self.repoName, filesystem.concat(self.pack, branch, repoPath), localPath)
       else
          self.repo:changeBranch(branch)
          success, reason = self.repo:downloadFile(repoPath, localPath)
@@ -558,8 +599,8 @@ function Package:install(dest, force)
    end
 
    if self.info.dependencies and success then
-      term.write("Done.\nInstalling Dependencies...\n")
       for dep, target in pairs(self.info.dependencies) do
+         term.write("Done.\nInstalling Dependencies " .. dep .. ":...\n")
          local localPath
          if string.find(target, "^//") then
             localPath = string.sub(target, 2)
@@ -571,12 +612,15 @@ function Package:install(dest, force)
             if not filesystem.exists(filesystem.path(localPath)) then
                filesystem.makeDirectory(filesystem.path(localPath))
             end
-            success = pcall(downloadFile, dep, localPath)
+            if options.offline then
+               success, reason = copy(self.repoName, sanitize_path(dep), localPath)
+            else
+               success = pcall(downloadFile, dep, localPath)
+            end
             if success then
                cache[pack][dep] = localPath
                saveCache(cache)
             else
-
                term.write("Error while downloading files for package '" ..
                   dep .. "'" .. ". Reverting installation... ")
                filesystem.remove(localPath)
@@ -644,6 +688,12 @@ function Package:addToDisk(address)
          local success, err = ocpt:addToDisk(address)
          if not success then
             io.stderr:write("Error while trying to add ocpt to disk: " .. err .. "\n")
+         else
+            local disk = component.proxy(address, "filesystem")
+            local handle = disk.open("/.prop", "w")
+            disk.write(handle, '{ fromDir = "/ocpt/master/ocpt", root = "/usr", label = "ocpt", }')
+            disk.close(handle)
+            io.stdout:write("ocpt package added successfully\n")
          end
       else
          io.stderr:write("unable to find ocpt package\n")
@@ -667,14 +717,27 @@ function Package:addToDisk(address)
    end
    if self.info.dependencies then
       for depName in pairs(self.info.dependencies) do
-         local dep = Package.getPackage(depName)
-         if dep then
-            local success, err = dep:addToDisk(address)
+         print("Installing dependency " .. depName)
+         if string.lower(string.sub(depName, 1, 4)) == "http" then
+            local sanetized = sanitize_path(depName)
+            sanetized = filesystem.concat("/mnt/" .. fs.address:sub(1, 3), sanetized)
+            if not filesystem.exists(filesystem.path(sanetized)) then
+               filesystem.makeDirectory(filesystem.path(sanetized))
+            end
+            local success = pcall(downloadFile, depName, sanetized)
             if not success then
-               return false, "Error while trying to install dependency package " .. depName .. ": " .. err
+               return false, "Error while trying to install dependency package " .. depName
             end
          else
-            return false, "Dependency package " .. depName .. " does not found."
+            local dep = Package.getPackage(depName)
+            if dep then
+               local success, err = dep:addToDisk(address)
+               if not success then
+                  return false, "Error while trying to install dependency package " .. depName .. ": " .. err
+               end
+            else
+               return false, "Dependency package " .. depName .. " does not found."
+            end
          end
       end
    end

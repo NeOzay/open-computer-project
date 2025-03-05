@@ -84,6 +84,8 @@ local function provideInfo(pack)
 			done = true
 		end
 	end
+	print("Repository: " .. pack.repoName)
+	
 	if not done then
 		print("No information provided.")
 	end
@@ -178,7 +180,12 @@ if args[1] == "floppy" then
 		return
 	end
 	print("Copying package '" .. pack.info.name .. "' to disk")
-	print(pack:addToDisk(args[3]))
+	local success, err = pack:addToDisk(args[3])
+	if success then
+		io.write("Package copied successfully\n")
+	else
+		io.stderr:write("Failed to copy package: " .. err .. "\n")
+	end
 	return
 end
 
