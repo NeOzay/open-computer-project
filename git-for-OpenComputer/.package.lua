@@ -1,6 +1,6 @@
 return {
 	"bin/git.lua",
 	"lib/github.lua",
-	"lib/dkjson.lua",
+	"lib/JSON.lua",
 	"usr/man/git"
 }
