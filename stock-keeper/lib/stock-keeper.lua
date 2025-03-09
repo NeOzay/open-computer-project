@@ -27,6 +27,7 @@ local config = {
 ---@field name string
 ---@field damage integer
 ---@field size integer
+---@field label string
 
 ---@param name string
 ---@param damage? integer
