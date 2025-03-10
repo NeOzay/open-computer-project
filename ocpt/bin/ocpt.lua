@@ -6,6 +6,7 @@ local term = require("term")
 local computer = require("computer")
 
 local ocpt = require("ocpt")
+ocpt.loadGitHub() -- retry loading the GitHub module, as it may not be loaded yet
 
 local gpu = component.gpu
 
@@ -18,7 +19,7 @@ local function printUsage()
 	print("'ocpt list [-i] <filter>' to get a list of available packages containing the specified substring")
 	print(" -i: Only list already installed packages")
 	print("'ocpt info <package>' to get further information about a program package")
-	print("'ocpt install [-f] <package> [path]' to download a package to a directory on your system (or /usr by default)")
+	print("'ocpt install <package> [path]' to download a package to a directory on your system (or /usr by default)")
 	print("'ocpt update <package>' to update an already installed package")
 	print("'ocpt update all' to update every already installed package")
 	print("'ocpt uninstall <package>' to remove a package from your system")
@@ -26,7 +27,7 @@ local function printUsage()
 	print(
 		"'oppm register <repository>' to register a package repository locally\n  Must be a valid GitHub repo containing programs.cfg")
 	print("'oppm unregister <repository>' to remove a package repository from your local registry")
-	print(" -f: Force creation of directories and overwriting of existing files.")
+	print("'oppm clear cache' to clear the local cache of repositories")
 end
 
 ---@param packs string[]
@@ -270,4 +271,10 @@ if args[1] == "unregister" then
 	end
 	return
 end
+
+if args[1] == "clear" and args[2] == "cache" then
+	ocpt.clearCache()
+	print("Cache cleared successfully")
+end
+
 printUsage()

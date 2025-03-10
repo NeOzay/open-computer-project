@@ -11,7 +11,20 @@ if component.isAvailable("internet") then
    internet = require("internet")
 end
 
-local hasGithub, github = pcall(require, "github")
+local hasGithub, github
+
+local function loadGitHub()
+   if github then
+      return
+   end
+   hasGithub, github = pcall(require, "github")
+   if not hasGithub then
+      io.stderr:write("Warning: github library not found. internet access will be disabled.\n")
+      io.stderr:write("Please run 'oppt install oppt' to install the library.\n")
+   end
+end
+
+loadGitHub()
 
 local options = {
    nocache = false, --useless
@@ -353,7 +366,6 @@ end
 
 local fetch
 local _packRepoCache = {} ---@type table<string, string>
---local _packNameCache = {} ---@type table<string, oppm.package>
 local _packObjectCache = {} ---@type table<string, oppt.package.handler>
 ---@param pack string
 ---@return oppt.package.handler?
@@ -402,6 +414,12 @@ local function getPackage(pack)
       return p
    end
    return nil
+end
+
+local function clearPackageCache()
+   _packRepoCache = {}
+   _packObjectCache = {}
+   fetch = nil
 end
 
 ---@param pack string
@@ -923,13 +941,13 @@ local function unregisterRepo(repo)
    return true
 end
 
-event.listen("component_added", function (name, address, componentType)
+event.listen("component_added", function(name, address, componentType)
    if componentType == "internet" and component.isAvailable("internet") then
       options.offline = (not (internet and hasGithub))
    end
 end)
 
-event.listen("component_removed", function (name, address, componentType)
+event.listen("component_removed", function(name, address, componentType)
    if componentType == "internet" and not component.isAvailable("internet") then
       options.offline = true
    end
@@ -946,4 +964,6 @@ return {
    registerRepo = registerRepo,
    unregisterRepo = unregisterRepo,
    options = options,
+   loadGitHub = loadGitHub,
+   clearPackageCache = clearPackageCache,
 }
