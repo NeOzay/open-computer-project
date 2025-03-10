@@ -264,10 +264,10 @@ function Stock_Keeper.run()
 	head:addCell(4):setText("RAM: ")
 	local ram = head:addCell(4):setText("000%"):setAlign("right")
 
-	event.timer(1, function ()
+	local timer  = event.timer(1, function ()
 		ram:setText(tostring(math.floor((computer.freeMemory() / computer.totalMemory()) * 100)) .. "%")
 		ram:draw()
-	end)
+	end, math.huge)
 	rowDisplay.drawAllRow()
 	while true do
 		collectItemInItemInNetwork()
@@ -332,6 +332,7 @@ function Stock_Keeper.run()
 			end
 		end
 	end
+	event.cancel(timer)
 end
 
 function Stock_Keeper.getConfig()
