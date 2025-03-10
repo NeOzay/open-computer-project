@@ -239,8 +239,8 @@ local function collectItemInItemInNetwork()
 		name = item.name..item.damage
 		if itemsTofound[name] then
 			items[name] = item
-			os.sleep()
 		end
+		os.sleep()
 	end
 	itemsInNetwork = items
 end
