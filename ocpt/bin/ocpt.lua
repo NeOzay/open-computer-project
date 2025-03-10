@@ -273,7 +273,7 @@ if args[1] == "unregister" then
 end
 
 if args[1] == "clear" and args[2] == "cache" then
-	ocpt.clearCache()
+	ocpt.clearPackageCache()
 	print("Cache cleared successfully")
 end
 
