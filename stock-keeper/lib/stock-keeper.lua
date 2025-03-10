@@ -230,6 +230,13 @@ local function collectItemsTofound()
 	end
 end
 
+local function freeMemory()
+   if computer.freeMemory() < 50000 then
+      --print("Low memory, collecting garbage")
+      for _ = 1, 20 do os.sleep(0) end
+   end
+end
+
 local function collectItemInItemInNetwork()
 	local interface = handles[1].interface
 	if interface.getItemInNetwork then	return {} end
@@ -240,7 +247,7 @@ local function collectItemInItemInNetwork()
 		if itemsTofound[name] then
 			items[name] = item
 		end
-		os.sleep()
+		freeMemory()
 	end
 	itemsInNetwork = items
 end
@@ -262,11 +269,11 @@ function Stock_Keeper.run()
 	term.clear()
 	local head = rowDisplay:newRow(1)
 	head:addCell(20):setText(" Stock-Keeper ")
-	head:addCell(4):setText("RAM: ")
-	local ram = head:addCell(4):setText("000%"):setAlign("right")
+	head:addCell(5):setText("RAM: "):setSeparator("")
+	local ram = head:addCell(6):setText("000%"):setAlign("right")
 
 	local timer  = event.timer(1, function ()
-		ram:setText(tostring(math.floor((computer.freeMemory() / computer.totalMemory()) * 100)) .. "%")
+		ram:setText(tostring(math.floor(100-(computer.freeMemory() / computer.totalMemory()) * 100)) .. "%")
 		ram:draw()
 	end, math.huge)
 	rowDisplay.drawAllRow()
