@@ -216,8 +216,10 @@ end
 if args[1] == "update" then
 	if not args[2] then
 		io.stderr:write("No package specified\n")
+		return
 	end
 	if args[2] == "all" then
+		print("Updating all packages")
 		local success, msg = ocpt.updateAll()
 		if not success then
 			io.stderr:write("Failed to update all packages: " .. msg .. "\n")
@@ -238,6 +240,7 @@ end
 if args[1] == "uninstall" then
 	if not args[2] then
 		io.stderr:write("No package specified\n")
+		return
 	end
 	local success, msg = ocpt.uninstall(args[2])
 	if not success then

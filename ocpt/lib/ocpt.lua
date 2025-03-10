@@ -381,7 +381,7 @@ local function getPackage(pack)
       if infos and infos[pack] then
          return PackageNew(_packRepoCache[pack], pack, infos[pack])
       else
-         error("Error while trying to get cached package " .. pack)
+         error("Error while trying to get cached package " .. pack .. " from " .. _packRepoCache[pack])
       end
    end
    if not fetch then
@@ -862,14 +862,14 @@ function Package.update(pack)
    if not cache[pack] then
       return false, "Package has not been installed."
    end
-   local dest
+   local dest = ""
    local packObj = Package.getPackage(pack)
    if not packObj then
       return false, "Unable to find package: " .. pack
    end
    for url, target in pairs(packObj.files) do
       if not string.find(target, "^//") then
-         if cache[pack][url] then
+         if cache[pack][url] and filesystem.path(cache[pack][url]) then
             dest = gsub(filesystem.path(cache[pack][url]), target .. ".*$", "/")
             break
          end
@@ -895,6 +895,7 @@ function Package.updateAll()
    local done = false
    local msgs = {}
    for pack in pairs(cache) do
+      io.write("Updating package " .. pack .. "...\n")
       if pack:sub(1, 1) ~= "_" then
          local success, msg = Package.update(pack)
          if not success then
