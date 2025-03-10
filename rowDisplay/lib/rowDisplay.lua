@@ -203,7 +203,7 @@ function RowManager:clearRows(rowNb)
 	rows = {}
 end
 
-function RowManager:drawAllRow()
+function RowManager.drawAllRow()
 	term.clear()
 	for _, row in pairs(rows) do
 		row:draw()

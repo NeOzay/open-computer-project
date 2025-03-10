@@ -46,7 +46,7 @@ local function saveConf()
 	if not file then
 		error("Failed to open file for writing configuration")
 	end
-	file:write(serialization.serialize(data))
+	file:write(serialization.serialize(data, math.huge))
 	file:close()
 end
 

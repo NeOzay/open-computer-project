@@ -125,7 +125,6 @@ local function newHandle(transposerAddress, interfaceAddress)
 	end
 	local row = rowDisplay:newRow()
 	row:addCell(50):setText("transposer: "..transposer.address)
-	row:draw()
 	return setmetatable(
 		{
 			address = transposerAddress,
@@ -151,7 +150,6 @@ function Handle:addRecipe(item, threshold)
 	recipe.stockCell = row:addCell(config.stockCellWidth):setText(""):setAlign("right")
 	recipe.thresholdCell = row:addCell(config.stockCellWidth):setText(recipe.threshold):setAlign("right")
 	recipe.inProcessCell = row:addCell(config.inProcessCellWidth):setText(recipe.inProcess):setAlign("right")
-	row:draw()
 	recipe.row = row
 	table.insert(self.recipes, recipe)
 	return recipe
@@ -258,6 +256,8 @@ end
 
 function Stock_Keeper.run()
 	collectItemsTofound()
+	term.clear()
+	rowDisplay.drawAllRow()
 	while true do
 		collectItemInItemInNetwork()
 		local globalInputChest = globalHandle and globalInputSide and feachInputChest(globalHandle, globalInputSide)

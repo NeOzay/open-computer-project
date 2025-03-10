@@ -176,7 +176,7 @@ if args[1] == "floppy" then
 	end
 	if options.u then
 		if not args[2] then
-			io.stderr:write("update all packages on disk\n")
+			io.write("update all packages on disk\n")
 		else
 			io.write("Updating package '" .. args[2] .. "' on disk\n")
 		end
