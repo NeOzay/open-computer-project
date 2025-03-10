@@ -13,6 +13,11 @@ end
 
 local hasGithub, github
 
+local options = {
+   nocache = false, --useless
+   offline = (not (internet and hasGithub)),
+}
+
 local function loadGitHub()
    if github then
       return
@@ -22,14 +27,12 @@ local function loadGitHub()
       io.stderr:write("Warning: github library not found. internet access will be disabled.\n")
       io.stderr:write("Please run 'oppt install oppt' to install the library.\n")
    end
+   options.offline = (not (internet and hasGithub))
 end
 
 loadGitHub()
 
-local options = {
-   nocache = false, --useless
-   offline = (not (internet and hasGithub)),
-}
+
 
 local wget
 local function downloadFile(url, path)

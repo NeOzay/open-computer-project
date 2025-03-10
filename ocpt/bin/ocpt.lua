@@ -8,6 +8,10 @@ local computer = require("computer")
 local ocpt = require("ocpt")
 ocpt.loadGitHub() -- retry loading the GitHub module, as it may not be loaded yet
 
+if ocpt.options.offline then
+	io.stderr:write("Offline mode enabled, no internet access\n")
+end
+
 local gpu = component.gpu
 
 local args, options = shell.parse(...)
