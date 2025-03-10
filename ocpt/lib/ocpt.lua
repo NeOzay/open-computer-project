@@ -663,11 +663,10 @@ end
 ---@return boolean success
 ---@return string? msg
 function Package:addToDisk(address)
-   local fs = component.proxy(address)
+   local fs = component.proxy(address, "filesystem")
    if fs.type ~= "filesystem" or not isvalidFilesystem(address) then
       return false, "Invalid filesystem"
    end
-   ---@cast fs filesystem
    local programs
    if fs.exists("/programs.cfg") then
       programs = getProgramsFile(address)
@@ -678,7 +677,7 @@ function Package:addToDisk(address)
       programs = {}
    end
    if programs[self.pack] then
-      return false, "Package already exists on disk"
+      return true, "Package already exists on disk"
    end
    programs[self.pack] = self.info
    programs[self.pack].files = self.files
@@ -767,6 +766,48 @@ function Package.removeToDisk(pack, address)
    saveProgramsFile(address, programs)
    fs.remove(pack)
    return true
+end
+
+---@param address string
+---@param pack string?
+function Package.updateDisk(address, pack)
+   local fs = component.proxy(address, "filesystem")
+   if fs.type ~= "filesystem" and isvalidFilesystem(address) then
+      return false, "Invalid filesystem"
+   end
+   if not fs.exists("/programs.cfg") then
+      return false, "No programs.cfg file found on disk"
+   end
+   local programs = getProgramsFile(address)
+   if not programs then
+      return false, "Error while trying to get programs.cfg file"
+   end
+   if pack then
+      if not programs[pack] then
+         return false, "Package does not exist on disk"
+      end
+      local packObj = Package.getPackage(pack)
+      if not packObj then
+         return false, "Unable to find package: " .. pack
+      end
+      Package.removeToDisk(pack, address)
+      local success, msg = packObj:addToDisk(address)
+      if not success then
+         return false, "Error while trying to update package: " .. (msg or "no error message")
+      end
+   else
+      for name in pairs(programs) do
+         Package.removeToDisk(name, address)
+         local packObj = Package.getPackage(name)
+         if not packObj then
+            return false, "Unable to find package: " .. name
+         end
+         local success, msg = packObj:addToDisk(address)
+         if not success then
+            return false, "Error while trying to update package: " .. (msg or "no error message")
+         end
+      end
+   end
 end
 
 ---@param pack string
@@ -897,6 +938,7 @@ return {
    list = Package.list,
    uninstall = Package.uninstall,
    removeToDisk = Package.removeToDisk,
+   updateDisk = Package.updateDisk,
    update = Package.update,
    updateAll = Package.updateAll,
    getPackage = Package.getPackage,

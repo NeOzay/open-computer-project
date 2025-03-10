@@ -154,7 +154,7 @@ local function getAvailableFilesystem()
 end
 
 if args[1] == "floppy" then
-	if not args[2] then
+	if not args[2] and not options.u then
 		io.stderr:write("No package specified\n")
 		return
 	end
@@ -173,6 +173,10 @@ if args[1] == "floppy" then
 			input = fsList[tonumber(io.read())]
 		end
 		args[3] = input
+	end
+	if options.u then
+		ocpt.updateDisk(args[3], args[2])
+		return
 	end
 	if options.r then
 		local success, err = ocpt.removeToDisk(args[2], args[3])
