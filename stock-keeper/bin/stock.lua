@@ -3,11 +3,21 @@ local sides         = require("sides")
 local serialization = require("serialization")
 local filesystem    = require("filesystem")
 local shell         = require("shell")
+local event         = require("event")
+local term          = require("term")
+local keyboard      = require("keyboard")
 
 local stock_keeper  = require("stock-keeper")
 local selector      = require("selector")
 
 local args, options = shell.parse(...)
+
+---@class Stock_Keeper.data.recipe
+---@field output Stock_Keeper.itemStack
+---@field inputs Stock_Keeper.itemStack[]
+---@field outputSide? number
+---@field inputSide? number
+---@field threshold? number
 
 ---@class Stock_Keeper.data
 ---@field transposers table<string, Stock_Keeper.data.transposer>
@@ -59,7 +69,7 @@ local function addTransposer(name, transposer, interface, InputSide)
 	end
 	if not data.transposers[transposer] then
 		---@class Stock_Keeper.data.transposer
-		---@field recipes {output:Stock_Keeper.itemStack, inputs:Stock_Keeper.itemStack[], outputSide:number, inputSide:number}[]
+		---@field recipes Stock_Keeper.data.recipe[]
 		---@field defaultInputSide number?
 		local t = { transposer = transposer, interface = interface, recipes = {}, name = name, defaultInputSide = InputSide }
 		data.transposers[transposer] = t
@@ -70,7 +80,7 @@ local function addTransposer(name, transposer, interface, InputSide)
 end
 
 ---@param filename string
----@return {output:Stock_Keeper.itemStack, inputs:Stock_Keeper.itemStack[], outputSide:number, inputSide:number}[]
+---@return Stock_Keeper.data.recipe[]
 local function loadBook(filename)
 	local recipesBook = {}
 	if filesystem.exists(filename) then
@@ -128,14 +138,49 @@ end
 loadConf()
 
 local bookslocate = "/home/recipes-books/"
+local cardinals = {
+	[0] = "down",
+	[1] = "up",
+	[2] = "north",
+	[3] = "south",
+	[4] = "west",
+	[5] = "east",
+}
 
----@param values? (Stock_Keeper.data.transposer|string)[]
----@param choices? string[]
+---@param recipe Stock_Keeper.data.recipe
+local function tostring_recipe(recipe)
+	local str = ""
+	str = recipe.outputSide and (str .. "o:" .. cardinals[recipe.outputSide] .. "  ") or str
+	str = recipe.inputSide and (str .. "i:" .. cardinals[recipe.inputSide] .. "  ") or str
+	str = recipe.threshold and (str .. "[" .. recipe.threshold .. "] ") or str
+	str = str .. recipe.output.size .. " " .. recipe.output.label .. " <- "
+	local ingrs = {}
+	for _, ingr in ipairs(recipe.inputs) do
+		table.insert(ingrs, ingr.size .. " " .. ingr.label)
+	end
+	str = str .. table.concat(ingrs, ", ")
+	return str
+end
+
+---@param values (Stock_Keeper.data.transposer|string)[]
+---@param choices string[]
+---@param name string?
 ---@return Stock_Keeper.data.transposer|string|nil
-local function selectTransposer(values, choices)
+---@overload fun():Stock_Keeper.data.transposer|nil
+---@overload fun(name:string):Stock_Keeper.data.transposer|nil
+local function selectTransposer(values, choices, name)
 	if not next(data.transposers) then
 		io.write("No transposers found\n")
 		return
+	end
+	if type(values) == "string" or name then ---@cast name string
+		name = name or values
+		for add, trans in pairs(data.transposers) do
+			if trans.name == name then
+				return trans
+			end
+		end
+		values = {}
 	end
 	values = values or {}
 	choices = choices or {}
@@ -146,8 +191,19 @@ local function selectTransposer(values, choices)
 	return selector(values, choices, "select transposer: ")
 end
 
+if not args[1] then
+	io.write("Usage: stock <command> [args]\n")
+	io.write("Commands:\n")
+	io.write("  add <transposer|recipe> [transposername]\n")
+	io.write("  clear <transposer|recipe|book> [transposername]\n")
+	io.write("  book [filename]\n")
+	io.write("  info <transposer|book> [transposername]\n")
+	io.write("  run\n")
+	return
+end
+
 if args[1] == "add" and not args[2] then
-	local values = { "recipes", "transposer" }
+	local values = { "recipe", "transposer" }
 	local choices = { "Add recipes", "Add transposer" }
 	local choice = selector(values, choices, "select what to add: ")
 	if not choice then
@@ -175,7 +231,7 @@ if args[1] == "add" and args[2] == "transposer" then
 	if n == "" then
 		n = t
 	end
-	io.write("Enter transposer default output side (optional): ")
+	io.write("Enter transposer default input side (optional): ")
 	local os = io.stdin:read()
 	if os == false then
 		return
@@ -199,62 +255,116 @@ local function listRecipesBooks(path, collector)
 	return collector
 end
 
-if args[1] == "add" and args[2] == "recipes" then
-	local trans = selectTransposer()
+if args[1] == "add" and args[2] == "recipe" then
+	local trans = selectTransposer(args[3])
+
 	if not trans then
 		return
 	end
-	if not args[3] then
-		local bookslist = listRecipesBooks()
-		if #bookslist < 1 then
-			io.write("No recipes books found, create one first\n")
-			return
-		end
-		local choice = selector(bookslist, bookslist, "select recipes book: ")
-		if not choice then
-			return
-		end
-		local recipesBook = loadBook(choice)
-		local sidesStr = ""
-		for i = 0, 5 do
-			sidesStr = sidesStr .. i .. ". " .. sides[i] .. "   "
-		end
 
-		local lastinputSide
-		local lastoutputSide
-		io.write("Enter Sides for all recipes\n")
-		io.write(sidesStr .. "\n")
-		for index, recipes in ipairs(recipesBook) do
-			while not recipes.outputSide do
-				io.write("Enter output side for recipe " .. recipes.output.label .. ": ")
-				local side = tonumber(io.stdin:read())
-				if side and side > 0 and side < 6 then
-					recipes.outputSide = side
-				else
-					io.write(sidesStr .. "\n")
-				end
-			end
+	local bookslist = listRecipesBooks()
+	if #bookslist < 1 then
+		io.write("No recipes books found, create one first\n")
+		return
+	end
+	local choice = selector(bookslist, bookslist, "select recipes book: ")
+	if not choice then
+		return
+	end
+	local recipesBook = loadBook(choice)
 
-			while not recipes.inputSide do
-				io.write("Enter input side for recipe " .. recipes.output.label .. ": ")
-				local side = tonumber(io.stdin:read())
-				if side and side > 0 and side < 6 then
-					recipes.inputSide = side
-				else
-					io.write(sidesStr .. "\n")
-				end
-			end
-		end
-		for name, recipe in ipairs(recipesBook) do
-			io.write("Adding recipe " .. recipe.output.name .. "\n")
-			table.insert(trans.recipes, recipe)
+	local availableSides = {}
+	local proxy = component.proxy(trans.transposer, "transposer")
+	if not proxy then
+		io.stderr:write("Failed to get transposer: "..trans.transposer.."\n")
+		return
+	end
+
+	for i = 0, 5 do
+		local invname = proxy.getInventoryName(i)
+		if invname and invname ~= "tile.appliedenergistics2.BlockInterface" then
+			table.insert(availableSides, i)
+			availableSides[tostring(i)] = true
 		end
 	end
+	local sidesStr = "sides: "
+
+	for _, i in ipairs(availableSides) do
+		sidesStr = sidesStr .. i .. "." .. cardinals[i] .. "   "
+	end
+	if #availableSides == 0 then
+		io.write("No available sides\n")
+		return
+	end
+	local lastThreshold = { "500" }
+	local lastinputSide = { trans.defaultInputSide and tostring(trans.defaultInputSide) }
+	local lastoutputSide = {}
+	local function read(history)
+		event.timer(0.0, function()
+			event.push("key_down", term.keyboard(), 0, keyboard.keys.up)
+		end)
+		return term.read(history)
+	end
+	io.write("Enter information for recipes\n")
+	for index, recipe in ipairs(recipesBook) do
+		while not recipe.threshold do
+			io.write("Enter threshold for recipe " .. recipe.output.label .. ": ")
+			local threshold = read(lastThreshold) ---@type string|number|false?
+			if not threshold then
+				break
+			end
+			threshold = tonumber(threshold)
+			if threshold and threshold > 0 then
+				lastThreshold[1] = tostring(threshold)
+				recipe.threshold = threshold
+			else
+				io.write("Invalid threshold\n")
+			end
+		end
+		io.write(sidesStr .. "\n")
+		while not recipe.outputSide do
+			io.write("Enter output side for recipe " .. recipe.output.label .. ": ")
+			local side = read(lastoutputSide) ---@type string|number|false?
+			if not side then
+				break
+			end
+			side = tonumber(side)
+			if side and availableSides[tostring(side)] then
+				lastoutputSide[1] = tostring(side)
+				recipe.outputSide = side
+			else
+				io.write("Invalid number\n")
+				io.write(sidesStr .. "\n")
+			end
+		end
+
+		while not recipe.inputSide do
+			io.write("Enter input side for recipe " .. recipe.output.label .. ": ")
+			local side = read(lastinputSide) ---@type string|number|false?
+			if not side then
+				break
+			end
+			side = tonumber(side)
+			if side and availableSides[tostring(side)]then
+				lastinputSide[1] = tostring(side)
+				recipe.inputSide = side
+			else
+				io.write("Invalid number\n")
+				io.write(sidesStr .. "\n")
+			end
+		end
+		if not (recipe.threshold and recipe.inputSide and recipe.outputSide) then
+			break
+		end
+		io.write("Adding recipe " .. recipe.output.label .. "\n")
+		table.insert(trans.recipes, recipe)
+	end
+
 	saveConf()
 end
 
 if args[1] == "clear" and not args[2] then
-	local values = { "recipes", "transposer", "book" }
+	local values = { "recipe", "transposer", "book" }
 	local choices = { "Clear recipes", "Clear transposer", "Clear book" }
 	local choice = selector(values, choices, "select what to clear: ")
 	if not choice then
@@ -264,20 +374,21 @@ if args[1] == "clear" and not args[2] then
 end
 
 if args[1] == "clear" and args[2] == "transposer" then
-	local choice = selectTransposer({ "all" }, { "clear all transposers" })
-	if not choice then
+	local trans = selectTransposer({ "all" }, { "clear all transposers" }, args[3])
+
+	if not trans then
 		return
 	end
-	if choice == "all" then
+	if trans == "all" then
 		data.transposers = {}
-	elseif type(choice) == "table" then
-		data.transposers[choice.transposer] = nil
+	elseif type(trans) == "table" then
+		data.transposers[trans.transposer] = nil
 	end
 	saveConf()
 end
 
-if args[1] == "clear" and args[2] == "recipes" then
-	local trans = selectTransposer()
+if args[1] == "clear" and args[2] == "recipe" then
+	local trans = selectTransposer(args[3])
 	if not trans or type(trans) == "string" then
 		return
 	end
@@ -288,12 +399,9 @@ if args[1] == "clear" and args[2] == "recipes" then
 	local values = { "all" } ---@type (number|string)[]
 	local choices = { "Clear all recipes" }
 	for ri, recipe in ipairs(trans.recipes) do
-		local ingrList = {}
-		for _, ingr in ipairs(recipe.inputs) do
-			table.insert(ingrList, ingr.size .. " " .. ingr.label)
-		end
+		local str = tostring_recipe(recipe)
 		table.insert(values, ri)
-		table.insert(choices, recipe.output.size .. " " .. recipe.output.label .. " <- " .. table.concat(ingrList, ","))
+		table.insert(choices, str)
 	end
 	local choice = selector(values, choices, "select recipe to clear: ")
 
@@ -321,12 +429,9 @@ if args[1] == "clear" and args[2] == "book" then
 	local choices = { "Clear all recipes" }
 	local book = loadBook(bookFile)
 	for ri, recipe in ipairs(book) do
-		local ingrList = {}
-		for _, ingr in ipairs(recipe.inputs) do
-			table.insert(ingrList, ingr.size .. " " .. ingr.label)
-		end
+		local str = tostring_recipe(recipe)
 		table.insert(values, ri)
-		table.insert(choices, recipe.output.size .. " " .. recipe.output.label .. " <- " .. table.concat(ingrList, ","))
+		table.insert(choices, str)
 	end
 	local choice = selector(values, choices, "select recipe to clear: ")
 
@@ -349,7 +454,10 @@ if args[1] == "book" then
 		io.write("Enter filename: ")
 		filename = io.stdin:read()
 	end
-	if filename == "" or not filename then
+	if not filename then
+		return
+	end
+	if filename == "" then
 		filename = bookslocate .. "book.svd"
 	else
 		filename = filename:match("%.svd$") and filename or filename .. ".svd"
@@ -372,7 +480,7 @@ if args[1] == "book" then
 			local stack = transposer.getSlotStackSize(i, 1)
 			if stack and stack > 0 then
 				table.insert(values, i)
-				table.insert(choices, invname .. " (" .. sides[i] .. ")")
+				table.insert(choices, invname .. " (" .. cardinals[i] .. ")")
 			end
 		end
 	end
@@ -416,17 +524,14 @@ if args[1] == "info" and not args[2] then
 end
 
 if args[1] == "info" and args[2] == "transposer" then
-	local transposer = selectTransposer()
+	local transposer = selectTransposer(args[3])
 	if not transposer then
 		return
 	end
-	io.write("Transposer: " .. transposer.name .. "\n")
+	io.write("Transposer "..transposer.name..": " ..transposer.transposer  .. "\n")
 	for _, recipe in ipairs(transposer.recipes) do
-		local ingrList = {}
-		for _, ingr in ipairs(recipe.inputs) do
-			table.insert(ingrList, ingr.size .. " " .. ingr.label)
-		end
-		io.write(recipe.output.size .. " " .. recipe.output.label .. " <- " .. table.concat(ingrList, ",") .. "\n")
+		local str = tostring_recipe(recipe)
+		io.write(str .. "\n")
 	end
 end
 
@@ -442,21 +547,19 @@ if args[1] == "info" and args[2] == "book" then
 	end
 	local recipesBook = loadBook(choice)
 	for _, recipe in ipairs(recipesBook) do
-		local ingrList = {}
-		for _, ingr in ipairs(recipe.inputs) do
-			table.insert(ingrList, ingr.size .. " " .. ingr.label)
-		end
-		io.write(recipe.output.size .. " " .. recipe.output.label .. " <- " .. table.concat(ingrList, ",") .. "\n")
+		local str = tostring_recipe(recipe)
+		io.write(str .. "\n")
 	end
 end
 
 if args[1] == "run" then
 	for add, trans in pairs(data.transposers) do
 		local inv = stock_keeper.addStock(add, trans.interface)
-		for _, recipes in ipairs(trans.recipes) do
-			inv:addRecipe(recipes.output, 500):addIngredients(recipes.inputs):setSides(recipes.outputSide, recipes
-			.inputSide)
+		for _, recipe in ipairs(trans.recipes) do
+			inv:addRecipe(recipe.output, recipe.threshold):addIngredients(recipe.inputs):setSides(recipe.outputSide, recipe
+				.inputSide)
 		end
 	end
+	term.clear()
 	stock_keeper.run()
 end

@@ -7,8 +7,6 @@ local rowDisplay = require("rowDisplay")
 
 local database = component.database
 
-term.clear()
-
 local width, height = component.gpu.getResolution()
 
 ---@class Stock_Keeper.config

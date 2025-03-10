@@ -26,7 +26,11 @@ local function selector(values, choices, prompt, row)
 	local choice
 	while not choice do
 		io.write(prompt)
-		choice = values[tonumber(io.read())]
+		local input = io.read()
+		if not input then
+			return nil
+		end
+		choice = values[tonumber(input)]
 	end
 	if choice == "Cancel" then
 		return nil
