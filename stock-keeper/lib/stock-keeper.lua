@@ -326,6 +326,7 @@ function Stock_Keeper.run()
 			end
 		end
 		ram:setText(tostring(math.floor((computer.freeMemory() / computer.totalMemory()) * 100)) .. "%")
+		ram:draw()
 	end
 end
 
