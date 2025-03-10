@@ -3,6 +3,7 @@ local component = require("component")
 local sides     = require("sides")
 local term      = require("term")
 local computer   = require("computer")
+local event      = require("event")
 
 local rowDisplay = require("rowDisplay")
 
@@ -262,6 +263,11 @@ function Stock_Keeper.run()
 	head:addCell(20):setText(" Stock-Keeper ")
 	head:addCell(4):setText("RAM: ")
 	local ram = head:addCell(4):setText("000%"):setAlign("right")
+
+	event.timer(1, function ()
+		ram:setText(tostring(math.floor((computer.freeMemory() / computer.totalMemory()) * 100)) .. "%")
+		ram:draw()
+	end)
 	rowDisplay.drawAllRow()
 	while true do
 		collectItemInItemInNetwork()
@@ -325,8 +331,6 @@ function Stock_Keeper.run()
 				os.sleep(5)
 			end
 		end
-		ram:setText(tostring(math.floor((computer.freeMemory() / computer.totalMemory()) * 100)) .. "%")
-		ram:draw()
 	end
 end
 
