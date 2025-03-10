@@ -175,6 +175,11 @@ if args[1] == "floppy" then
 		args[3] = input
 	end
 	if options.u then
+		if not args[2] then
+			io.stderr:write("update all packages on disk\n")
+		else
+			io.write("Updating package '" .. args[2] .. "' on disk\n")
+		end
 		ocpt.updateDisk(args[3], args[2])
 		return
 	end

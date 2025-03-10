@@ -797,6 +797,7 @@ function Package.updateDisk(address, pack)
       end
    else
       for name in pairs(programs) do
+         io.write("Updating package " .. name .. "...\n")
          Package.removeToDisk(name, address)
          local packObj = Package.getPackage(name)
          if not packObj then
