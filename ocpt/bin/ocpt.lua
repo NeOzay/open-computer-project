@@ -126,7 +126,7 @@ if args[1] == "install" then
 	end
 	print("Installing package '" .. pack.info.name .. "'")
 	local success, msg = pack:install(args[3], options.f)
-	if not success then
+	if not success or msg then
 		io.stderr:write("Failed to install package: " .. msg .. "\n")
 	else
 		print("Package installed successfully")
