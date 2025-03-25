@@ -18,6 +18,13 @@ local args, options = shell.parse(...)
 ---@field outputSide? number
 ---@field inputSide? number
 ---@field threshold? number
+---@field id integer
+---@field book string
+
+---@class Stock_Keeper.data.book
+---@field [integer] Stock_Keeper.data.recipe
+---@field name string
+---@field lastId integer
 
 ---@class Stock_Keeper.data
 ---@field transposers table<string, Stock_Keeper.data.transposer>
@@ -80,9 +87,12 @@ local function addTransposer(name, transposer, interface, InputSide)
 end
 
 ---@param filename string
----@return Stock_Keeper.data.recipe[]
+---@return Stock_Keeper.data.book
 local function loadBook(filename)
-	local recipesBook = {}
+	local recipesBook = { ---@type Stock_Keeper.data.book
+		name = filename,
+		lastId = 0,
+	}
 	if filesystem.exists(filename) then
 		local file = io.open(filename, "r")
 		if not file then
@@ -149,7 +159,7 @@ local cardinals = {
 
 ---@param recipe Stock_Keeper.data.recipe
 local function tostring_recipe(recipe)
-	local str = ""
+	local str = recipe.id..": "
 	str = recipe.outputSide and (str .. "o:" .. cardinals[recipe.outputSide] .. "  ") or str
 	str = recipe.inputSide and (str .. "i:" .. cardinals[recipe.inputSide] .. "  ") or str
 	str = recipe.threshold and (str .. "[" .. recipe.threshold .. "] ") or str
@@ -306,7 +316,15 @@ if args[1] == "add" and args[2] == "recipe" then
 		return term.read(history)
 	end
 	io.write("Enter information for recipes\n")
+	local reciepesMap = {}
+	for index, recipe in ipairs(trans.recipes) do
+		reciepesMap[recipe.book..recipe.id] = true
+	end
 	for index, recipe in ipairs(recipesBook) do
+		if reciepesMap[recipe.book..recipe.id] then
+			io.write("Recipe " .. recipe.output.label .. " already exists\n")
+			goto continue
+		end
 		while not recipe.threshold do
 			io.write("Enter threshold for recipe " .. recipe.output.label .. ": ")
 			local threshold = read(lastThreshold) ---@type string|number|false?
@@ -358,6 +376,7 @@ if args[1] == "add" and args[2] == "recipe" then
 		end
 		io.write("Adding recipe " .. recipe.output.label .. "\n")
 		table.insert(trans.recipes, recipe)
+		::continue::
 	end
 
 	saveConf()
@@ -437,7 +456,7 @@ if args[1] == "clear" and args[2] == "book" then
 
 	if choice == "all" then
 		io.write("Clearing all recipes")
-		book = {}
+		book = {name = book.name, lastId = book.lastId}
 	elseif type(choice) == "number" then
 		io.write("Clearing recipe " .. book[choice].output.label)
 		table.remove(book, choice)
@@ -492,7 +511,7 @@ if args[1] == "book" then
 		return
 	end
 
-	local currentRecipe = nil
+	local currentRecipe = nil ---@type Stock_Keeper.data.recipe|nil
 	for i = 1, transposer.getInventorySize(chestSide) or 0 do
 		local stack = transposer.getStackInSlot(chestSide, i)
 		if not stack then
@@ -503,11 +522,15 @@ if args[1] == "book" then
 			goto continue
 		end
 		if not currentRecipe then
-			currentRecipe = { output = item(stack), inputs = {} }
+			recipesBook.lastId = recipesBook.lastId + 1
+			currentRecipe = {output = item(stack), inputs = {}, id = recipesBook.lastId, book = recipesBook.name}
 		else
 			table.insert(currentRecipe.inputs, item(stack))
 		end
 		::continue::
+	end
+	if currentRecipe then
+		table.insert(recipesBook, currentRecipe)
 	end
 	optimizeRecipes(recipesBook)
 	saveBook(recipesBook, filename)

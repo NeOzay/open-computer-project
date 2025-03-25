@@ -231,7 +231,7 @@ local function collectItemsTofound()
 end
 
 local function freeMemory()
-   if computer.freeMemory() < 50000 then
+   if computer.freeMemory()/computer.totalMemory() < 0.3 then
       --print("Low memory, collecting garbage")
       for _ = 1, 20 do os.sleep(0) end
    end

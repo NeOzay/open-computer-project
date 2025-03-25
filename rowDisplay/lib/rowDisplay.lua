@@ -25,7 +25,7 @@ Cell.__index = Cell
 ---@param separator? string
 ---@return RowManager.Cell
 local function newCell(x, y, width, lpadding, rpadding, align, separator)
-	local cell = setmetatable({}, Cell)
+	local cell = setmetatable({}, Cell) ---@type  RowManager.Cell
 	cell.text = ""
 	cell.x = x
 	cell.y = y
@@ -195,7 +195,7 @@ function RowManager:newRow(rowNunber)
 end
 
 ---@param rowNb? integer
-function RowManager:clearRows(rowNb)
+function RowManager.clearRows(rowNb)
 	if rowNb then
 		rows[rowNb] = nil
 		return

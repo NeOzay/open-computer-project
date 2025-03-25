@@ -121,14 +121,14 @@ local function readall(handle, proxy)
          chunk = proxy.read(handle, math.huge)
          data[#data + 1] = chunk
       until not chunk
-      return table.concat(data, "\n")
+      return table.concat(data)
    end
 
    repeat
       chunk = handle:read(math.huge)
       data[#data + 1] = chunk
    until not chunk
-   return table.concat(data, "\n")
+   return table.concat(data)
 end
 
 ---@param path string
