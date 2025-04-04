@@ -55,5 +55,5 @@
 		"computer",
 		"component"
 	],
-
+	"emmylua.misc.executablePath": "C:\\Users\\colpa\\IdeaProjects\\emmylua-analyzer-rust\\target\\release\\emmylua_ls.exe",
 }

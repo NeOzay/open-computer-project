@@ -491,7 +491,7 @@ if args[1] == "book" then
 	if not transposer then
 		error("Failed to get transposer")
 	end
-	local values = {} ---@type number[]
+	local values = {} ---@type integer[]
 	local choices = {}
 	for i = 0, 5 do
 		local invname = transposer.getInventoryName(i)
